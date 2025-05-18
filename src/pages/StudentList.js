@@ -44,7 +44,7 @@ function StudentList() {
 
   const fetchStudents = async () => {
     try {
-      const response = await axios.get('http://192.168.1.8:5050/api/students', {
+      const response = await axios.get('https://tesserino-virtuale1.onrender.com/api/students', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setStudents(response.data);
@@ -55,7 +55,7 @@ function StudentList() {
 
   const handleAddStudent = async () => {
     try {
-      await axios.post('http://192.168.1.8:5050/api/students', newStudent, {
+      await axios.post('https://tesserino-virtuale1.onrender.com/api/students', newStudent, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setOpen(false);
@@ -69,7 +69,7 @@ function StudentList() {
   const handleDeleteStudent = async (id) => {
     if (window.confirm('Sei sicuro di voler eliminare questo studente?')) {
       try {
-        await axios.delete(`http://192.168.1.8:5050/api/students/${id}`, {
+        await axios.delete(`https://tesserino-virtuale1.onrender.com/api/students/${id}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         fetchStudents();
@@ -118,7 +118,7 @@ function StudentList() {
 
   const handleEditStudentSave = async () => {
     try {
-      await axios.patch(`http://192.168.1.8:5050/api/students/${editStudent._id}`, {
+      await axios.patch(`https://tesserino-virtuale1.onrender.com/api/students/${editStudent._id}`, {
         name: editStudent.name,
         telefono: editStudent.telefono,
       }, {
