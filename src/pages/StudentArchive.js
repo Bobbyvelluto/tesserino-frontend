@@ -18,7 +18,7 @@ function StudentArchive() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('http://192.168.1.8:5050/api/students', {
+    axios.get('https://tesserino-virtuale1.onrender.com/api/students', {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     })
       .then(res => setStudents(res.data))

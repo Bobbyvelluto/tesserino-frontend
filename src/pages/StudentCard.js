@@ -34,7 +34,7 @@ function StudentCard() {
 
   const fetchStudent = async () => {
     try {
-      const response = await axios.get(`http://192.168.1.8:5050/api/students/${id}`, {
+      const response = await axios.get(`https://tesserino-virtuale1.onrender.com/api/students/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setStudent(response.data);
@@ -47,7 +47,7 @@ function StudentCard() {
   const handleUndoLesson = async (lessonIndex) => {
     try {
       await axios.patch(
-        `http://192.168.1.8:5050/api/students/${id}/lessons/${lessonIndex}/undo`,
+        `https://tesserino-virtuale1.onrender.com/api/students/${id}/lessons/${lessonIndex}/undo`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
@@ -127,7 +127,7 @@ function StudentCard() {
           variant="contained"
           color="success"
           onClick={async () => {
-            await axios.post(`http://192.168.1.8:5050/api/students/${id}/tesserini`, {}, {
+            await axios.post(`https://tesserino-virtuale1.onrender.com/api/students/${id}/tesserini`, {}, {
               headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             });
             window.location.reload();
@@ -478,7 +478,7 @@ function StudentCard() {
               variant="contained"
               color="success"
               onClick={async () => {
-                await axios.post(`http://192.168.1.8:5050/api/students/${student._id}/tesserini`, {}, {
+                await axios.post(`https://tesserino-virtuale1.onrender.com/api/students/${student._id}/tesserini`, {}, {
                   headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                 });
                 fetchStudent();
@@ -510,7 +510,7 @@ function StudentCard() {
                     onClick={lesson.isUsed
                       ? async () => {
                           if (window.confirm('Vuoi annullare questa lezione?')) {
-                            await axios.patch(`http://192.168.1.8:5050/api/students/${student._id}/tesserini/${idx}/lessons/${lidx}/undo`, {}, {
+                            await axios.patch(`https://tesserino-virtuale1.onrender.com/api/students/${student._id}/tesserini/${idx}/lessons/${lidx}/undo`, {}, {
                               headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                             });
                             fetchStudent();
@@ -519,7 +519,7 @@ function StudentCard() {
                       : (localStorage.getItem('token') && !lesson.isUsed
                         ? async () => {
                             if (window.confirm('Vuoi marcare questa lezione come usata?')) {
-                              await axios.patch(`http://192.168.1.8:5050/api/students/${student._id}/tesserini/${idx}/lessons/${lidx}/use`, {}, {
+                              await axios.patch(`https://tesserino-virtuale1.onrender.com/api/students/${student._id}/tesserini/${idx}/lessons/${lidx}/use`, {}, {
                                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                               });
                               fetchStudent();
