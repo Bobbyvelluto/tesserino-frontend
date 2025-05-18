@@ -1,0 +1,21 @@
+{
+  "short_name": "Boxing",
+  "name": "MY BOXING LESSONS",
+  "icons": [
+    {
+      "src": "wbbs-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "wbbs-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#e3f2fd",
+  "theme_color": "#1976d2",
+  "orientation": "portrait"
+} 
