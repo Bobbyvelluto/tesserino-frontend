@@ -264,7 +264,7 @@ function StudentCard() {
           bgcolor: 'rgba(0,0,0,0.18)',
           zIndex: 2,
         }} />
-        {/* Badge lezioni: mostra solo il numero effettivo di moduli */}
+        {/* Badge lezioni: mostra solo il numero effettivo di moduli del tesserino attivo */}
         <Box sx={{
           position: 'absolute',
           left: 0,
