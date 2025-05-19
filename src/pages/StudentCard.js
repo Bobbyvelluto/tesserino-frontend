@@ -264,7 +264,7 @@ function StudentCard() {
           bgcolor: 'rgba(0,0,0,0.18)',
           zIndex: 2,
         }} />
-        {/* Badge lezioni: una sola fila da 10, rettangolari verticali */}
+        {/* Badge lezioni: mostra solo il numero effettivo di moduli */}
         <Box sx={{
           position: 'absolute',
           left: 0,
@@ -277,7 +277,7 @@ function StudentCard() {
           justifyContent: 'center',
           gap: 0.5,
         }}>
-          {getLessons(student).slice(0, 10).map((lesson, lessonIndex) => {
+          {getLessons(student).map((lesson, lessonIndex) => {
             const dateString = lesson.date ? new Date(lesson.date).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
             return lesson.isUsed ? (
               <Tooltip key={lessonIndex} title={dateString ? `Lezione effettuata il ${dateString}` : ''} arrow>
