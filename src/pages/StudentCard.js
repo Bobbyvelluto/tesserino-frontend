@@ -8,6 +8,10 @@ import {
   IconButton,
   Snackbar,
   Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import axios from 'axios';
 import PersonIcon from '@mui/icons-material/Person';
@@ -26,6 +30,7 @@ function StudentCard() {
   const [undoLessonIndex, setUndoLessonIndex] = useState(null);
   const [showLessonInfo, setShowLessonInfo] = useState(false);
   const [lessonInfo, setLessonInfo] = useState({});
+  const [openTessDialog, setOpenTessDialog] = useState(false);
 
   useEffect(() => {
     fetchStudent();
@@ -109,6 +114,15 @@ function StudentCard() {
     </svg>
   );
 
+  // Funzione per creare un nuovo tesserino con scelta moduli
+  const handleNewTesserino = (numLessons) => async () => {
+    await axios.post(`https://tesserino-virtuale1.onrender.com/api/students/${id}/tesserini`, { numLessons }, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    });
+    setOpenTessDialog(false);
+    fetchStudent();
+  };
+
   if (!student) {
     return (
       <Container>
@@ -126,15 +140,24 @@ function StudentCard() {
         <Button
           variant="contained"
           color="success"
-          onClick={async () => {
-            await axios.post(`https://tesserino-virtuale1.onrender.com/api/students/${id}/tesserini`, {}, {
-              headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-            });
-            window.location.reload();
-          }}
+          onClick={() => setOpenTessDialog(true)}
         >
           Crea nuovo tesserino
         </Button>
+        <Dialog open={openTessDialog} onClose={() => setOpenTessDialog(false)}>
+          <DialogTitle>Scegli il tipo di tesserino</DialogTitle>
+          <DialogContent>
+            <Button variant="contained" color="primary" onClick={handleNewTesserino(10)} sx={{ m: 1 }}>
+              Tesserino 10 moduli
+            </Button>
+            <Button variant="contained" color="secondary" onClick={handleNewTesserino(5)} sx={{ m: 1 }}>
+              Tesserino 5 moduli
+            </Button>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenTessDialog(false)}>Annulla</Button>
+          </DialogActions>
+        </Dialog>
       </Container>
     );
   }
