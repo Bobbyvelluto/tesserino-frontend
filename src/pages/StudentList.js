@@ -36,6 +36,8 @@ function StudentList() {
   const [editStudent, setEditStudent] = useState({ _id: '', name: '', telefono: '' });
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
+  const [openTessDialog, setOpenTessDialog] = useState(false);
+  const [pendingStudent, setPendingStudent] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -53,13 +55,20 @@ function StudentList() {
     }
   };
 
-  const handleAddStudent = async () => {
+  const handleAddStudent = async (numLessons) => {
     try {
-      await axios.post('https://tesserino-virtuale1.onrender.com/api/students', newStudent, {
+      await axios.post('https://tesserino-virtuale1.onrender.com/api/students', pendingStudent, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      }).then(async res => {
+        // Dopo aver creato lo studente, aggiungi il tesserino scelto
+        await axios.post(`https://tesserino-virtuale1.onrender.com/api/students/${res.data._id}/tesserini`, { numLessons }, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        });
       });
       setOpen(false);
+      setOpenTessDialog(false);
       setNewStudent({ name: '', telefono: '' });
+      setPendingStudent(null);
       fetchStudents();
     } catch (error) {
       console.error('Errore nell\'aggiunta dello studente:', error);
@@ -79,15 +88,9 @@ function StudentList() {
     }
   };
 
-  // Funzione per ottenere l'IP locale del server invece di localhost
   function getServerOrigin() {
-    // Sostituisci 'localhost' con l'IP locale del server
-    const origin = window.location.origin;
-    if (origin.includes('localhost')) {
-      // Inserisci qui il tuo IP locale, ad esempio:
-      return origin.replace('localhost', '192.168.1.8');
-    }
-    return origin;
+    // Restituisce sempre il dominio pubblico di Render
+    return 'https://tesserino-frontend.onrender.com';
   }
 
   const handleCopyLink = (id) => {
@@ -167,9 +170,19 @@ function StudentList() {
   return (
     <Container maxWidth="md" sx={{ mt: 4 }}>
       <Paper elevation={3} sx={{ p: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          Lista Studenti
-        </Typography>
+        <Box sx={{
+          bgcolor: '#1976d2',
+          color: '#fff',
+          borderRadius: 2,
+          p: 3,
+          mb: 3,
+          textAlign: 'center',
+          boxShadow: '0 4px 24px #1976d244',
+        }}>
+          <Typography variant="h3" sx={{ fontWeight: 900, letterSpacing: 2, fontFamily: 'Oswald, Impact, Arial, sans-serif', mb: 0 }}>
+            Abbonamenti
+          </Typography>
+        </Box>
         {studentsInScadenza.length > 0 && (
           <Alert severity="warning" sx={{ mb: 2 }}>
             Attenzione: {studentsInScadenza.length} studente/i stanno per terminare il tesserino!
@@ -288,9 +301,24 @@ function StudentList() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpen(false)}>Annulla</Button>
-          <Button onClick={handleAddStudent} variant="contained">
-            Aggiungi
+          <Button onClick={() => { setPendingStudent(newStudent); setOpen(false); setOpenTessDialog(true); }} variant="contained">
+            Avanti
           </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={openTessDialog} onClose={() => setOpenTessDialog(false)}>
+        <DialogTitle>Scegli il tipo di tesserino</DialogTitle>
+        <DialogContent>
+          <Button variant="contained" color="primary" onClick={() => handleAddStudent(10)} sx={{ m: 1 }}>
+            Tesserino 10 moduli
+          </Button>
+          <Button variant="contained" color="secondary" onClick={() => handleAddStudent(5)} sx={{ m: 1 }}>
+            Tesserino 5 moduli
+          </Button>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenTessDialog(false)}>Annulla</Button>
         </DialogActions>
       </Dialog>
 

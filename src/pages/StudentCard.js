@@ -123,6 +123,11 @@ function StudentCard() {
     fetchStudent();
   };
 
+  // Colore giallo dei moduli
+  const yellowMod = '#ffeb3b';
+  // Colore verde per il box nome
+  const nameBoxColor = '#43a047';
+
   if (!student) {
     return (
       <Container>
@@ -234,198 +239,179 @@ function StudentCard() {
             </Box>
           </Box>
         )}
-        <Box
-          sx={{
-            width: { xs: '98vw', sm: 340, md: 360 },
-            maxWidth: { xs: '98vw', sm: 400 },
-            height: { xs: '98vh', sm: 500 },
-            maxHeight: { xs: '98vh', sm: 600 },
-            minHeight: 420,
-            minWidth: 260,
-            m: 0,
-            p: 0,
-            borderRadius: 8,
-            boxShadow: '0 8px 32px #0007',
-            position: 'relative',
-            overflow: 'hidden',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'flex-end',
-            background: 'linear-gradient(135deg, #e3f2fd 0%, #fff 100%)',
-            border: '4px solid',
-            borderImage: 'linear-gradient(135deg, #1976d2 0%, #00c6ff 100%) 1',
-          }}
-        >
-          {/* Sfondo immagine */}
-          <img
-            src="/main.jpg"
-            alt="Boxe BG"
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              zIndex: 0,
-              border: '4px solid #b71c1c',
-              borderRadius: '8px',
-            }}
-          />
-          {/* Overlay scuro per contrasto */}
-          <Box sx={{
+        {/* Sfondo immagine e overlay */}
+        <img
+          src="/main.jpg"
+          alt="Boxe BG"
+          style={{
             position: 'absolute',
             top: 0,
             left: 0,
             width: '100%',
             height: '100%',
-            bgcolor: 'rgba(0,0,0,0.18)',
-            zIndex: 2,
-          }} />
-          {/* Nome studente sopra la fila dei moduli, centrato e più in basso */}
+            objectFit: 'cover',
+            zIndex: 0,
+            border: '4px solid #b71c1c',
+            borderRadius: '8px',
+          }}
+        />
+        <Box sx={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          bgcolor: 'rgba(0,0,0,0.18)',
+          zIndex: 2,
+        }} />
+        {/* Badge lezioni: una sola fila da 10, rettangolari verticali */}
+        <Box sx={{
+          position: 'absolute',
+          left: 0,
+          bottom: 70,
+          width: '100%',
+          zIndex: 4,
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 0.5,
+        }}>
+          {getLessons(student).slice(0, 10).map((lesson, lessonIndex) => {
+            const dateString = lesson.date ? new Date(lesson.date).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
+            return lesson.isUsed ? (
+              <Tooltip key={lessonIndex} title={dateString ? `Lezione effettuata il ${dateString}` : ''} arrow>
+                <Box
+                  sx={{
+                    width: 38,
+                    height: 52,
+                    borderRadius: 6,
+                    bgcolor: yellowMod,
+                    border: '2.5px solid #aaa',
+                    boxShadow: 'none',
+                    opacity: 0.92,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 700,
+                    fontSize: 18,
+                    color: '#d32f2f',
+                    mb: 0,
+                    transition: 'all 0.2s',
+                    boxSizing: 'border-box',
+                    cursor: 'pointer',
+                    position: 'relative',
+                  }}
+                  onClick={() => {}}
+                >
+                  <Box sx={{ background: 'orange', borderRadius: 3, px: 0.7, py: 0.2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    ✗
+                  </Box>
+                  {/* Bottone Annulla visibile solo se token presente (admin) */}
+                  {localStorage.getItem('token') && (
+                    <button
+                      onClick={() => handleUndoLesson(lessonIndex)}
+                      style={{
+                        position: 'absolute',
+                        top: 2,
+                        right: 2,
+                        width: 18,
+                        height: 18,
+                        background: '#ff9800',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '50%',
+                        fontSize: 10,
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        boxShadow: '0 1px 4px #e6510022',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 10,
+                      }}
+                      title="Annulla lezione"
+                    >
+                      ↺
+                    </button>
+                  )}
+                </Box>
+              </Tooltip>
+            ) : (
+              <Box
+                key={lessonIndex}
+                sx={{
+                  width: 38,
+                  height: 52,
+                  borderRadius: 6,
+                  bgcolor: yellowMod,
+                  border: '2.5px solid #43a047',
+                  boxShadow: '0 2px 8px #1976d233',
+                  opacity: 0.92,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  fontWeight: 700,
+                  fontSize: 18,
+                  color: '#1976d2',
+                  mb: 0,
+                  transition: 'all 0.2s',
+                  boxSizing: 'border-box',
+                  '&:hover': {
+                    boxShadow: '0 0 8px #43a047',
+                    transform: 'scale(1.08)',
+                    background: 'linear-gradient(135deg, #fffde7 0%, #fff9c4 100%)',
+                  },
+                }}
+                onClick={() => handleAvailableLessonClick(lessonIndex, lesson)}
+              >
+                <Box sx={{ background: 'orange', borderRadius: 3, px: 0.7, py: 0.2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {lessonIndex + 1}
+                </Box>
+              </Box>
+            );
+          })}
+        </Box>
+        {/* Nome allievo SOTTO i moduli, con padding e sfondo verde */}
+        <Box sx={{
+          position: 'absolute',
+          left: 0,
+          bottom: 10,
+          width: '100%',
+          zIndex: 5,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
           <Box sx={{
-            position: 'absolute',
-            left: 0,
-            bottom: 70,
-            width: '100%',
-            zIndex: 5,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 0.7,
-            minHeight: 38,
+            bgcolor: nameBoxColor,
+            borderRadius: 3,
+            px: 3,
+            py: 1.5,
+            boxShadow: '0 2px 8px #43a04755',
+            border: '2px solid #fffde7',
+            minWidth: 120,
+            textAlign: 'center',
           }}>
-            <PersonIcon sx={{ color: '#fffde7', fontSize: 22, mb: '1px' }} />
             <Typography
               align="center"
               sx={{
                 fontFamily: "'Oswald', Impact, Arial, sans-serif",
                 fontWeight: 900,
                 letterSpacing: 2,
-                color: '#fffde7',
-                textShadow: '0 2px 8px #222b, 0 0 6px #222b',
-                WebkitTextStroke: '1.2px #222',
+                color: '#fff',
+                textShadow: '0 2px 8px #222b',
                 m: 0,
-                fontSize: 26,
+                fontSize: 22,
                 textTransform: 'uppercase',
                 lineHeight: 1.1,
                 px: 1.5,
                 borderRadius: 3,
-                background: 'rgba(67,160,71,0.12)',
-                boxShadow: '0 1px 4px #2222',
               }}
             >
               {student.name}
             </Typography>
-          </Box>
-          {/* Badge lezioni: una sola fila da 10, rettangolari verticali */}
-          <Box sx={{
-            position: 'absolute',
-            left: 0,
-            bottom: 28,
-            width: '100%',
-            zIndex: 4,
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 0.5,
-          }}>
-            {getLessons(student).slice(0, 10).map((lesson, lessonIndex) => {
-              const dateString = lesson.date ? new Date(lesson.date).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
-              return lesson.isUsed ? (
-                <Tooltip key={lessonIndex} title={dateString ? `Lezione effettuata il ${dateString}` : ''} arrow>
-                  <Box
-                    sx={{
-                      width: 38,
-                      height: 52,
-                      borderRadius: 6,
-                      bgcolor: 'linear-gradient(135deg, #bdbdbd 0%, #e0e0e0 100%)',
-                      border: '2.5px solid #aaa',
-                      boxShadow: 'none',
-                      opacity: 0.92,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontWeight: 700,
-                      fontSize: 18,
-                      color: '#d32f2f',
-                      mb: 0,
-                      transition: 'all 0.2s',
-                      boxSizing: 'border-box',
-                      cursor: 'pointer',
-                      position: 'relative',
-                    }}
-                    onClick={() => {}}
-                  >
-                    <Box sx={{ background: 'orange', borderRadius: 3, px: 0.7, py: 0.2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      ✗
-                    </Box>
-                    {/* Bottone Annulla visibile solo se token presente (admin) */}
-                    {localStorage.getItem('token') && (
-                      <button
-                        onClick={() => handleUndoLesson(lessonIndex)}
-                        style={{
-                          position: 'absolute',
-                          top: 2,
-                          right: 2,
-                          width: 18,
-                          height: 18,
-                          background: '#ff9800',
-                          color: '#fff',
-                          border: 'none',
-                          borderRadius: '50%',
-                          fontSize: 10,
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                          boxShadow: '0 1px 4px #e6510022',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          zIndex: 10,
-                        }}
-                        title="Annulla lezione"
-                      >
-                        ↺
-                      </button>
-                    )}
-                  </Box>
-                </Tooltip>
-              ) : (
-                <Box
-                  key={lessonIndex}
-                  sx={{
-                    width: 38,
-                    height: 52,
-                    borderRadius: 6,
-                    bgcolor: 'linear-gradient(135deg, #fff 0%, #e3f2fd 100%)',
-                    border: '2.5px solid #43a047',
-                    boxShadow: '0 2px 8px #1976d233',
-                    opacity: 0.92,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    fontWeight: 700,
-                    fontSize: 18,
-                    color: '#1976d2',
-                    mb: 0,
-                    transition: 'all 0.2s',
-                    boxSizing: 'border-box',
-                    '&:hover': {
-                      boxShadow: '0 0 8px #43a047',
-                      transform: 'scale(1.08)',
-                      background: 'linear-gradient(135deg, #bbdefb 0%, #90caf9 100%)',
-                    },
-                  }}
-                  onClick={() => handleAvailableLessonClick(lessonIndex, lesson)}
-                >
-                  <Box sx={{ background: 'orange', borderRadius: 3, px: 0.7, py: 0.2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {lessonIndex + 1}
-                  </Box>
-                </Box>
-              );
-            })}
           </Box>
         </Box>
       </Box>
