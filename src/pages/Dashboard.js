@@ -8,7 +8,7 @@ import {
   Grid,
   Box,
 } from '@mui/material';
-import { People as PeopleIcon, ExitToApp as ExitToAppIcon } from '@mui/icons-material';
+import { People as PeopleIcon, ExitToApp as ExitToAppIcon, SportsMma as SportsMmaIcon } from '@mui/icons-material';
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -20,7 +20,11 @@ function Dashboard() {
 
   return (
     <Container maxWidth="md" sx={{ mt: 4 }}>
-      <Paper elevation={3} sx={{ p: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+        <img src="/wbbs-icon-192.png" alt="Logo WBBS" style={{ height: 80, marginRight: 16, borderRadius: 12, boxShadow: '0 4px 24px #d32f2f88', border: '3px solid #d32f2f', background: '#fff' }} />
+        <SportsMmaIcon sx={{ fontSize: 80, color: '#d32f2f', filter: 'drop-shadow(0 2px 8px #000a)' }} />
+      </Box>
+      <Paper elevation={3} sx={{ p: 3, border: '4px solid #d32f2f', boxShadow: '0 8px 32px #d32f2f55', background: 'linear-gradient(135deg, #232323 0%, #444 100%)' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
           <Typography variant="h4">
             Dashboard
@@ -48,9 +52,9 @@ function Dashboard() {
               }}
               onClick={() => navigate('/students')}
             >
-              <PeopleIcon sx={{ fontSize: 60, color: 'primary.main', mb: 2 }} />
+              <PeopleIcon sx={{ fontSize: 60, color: 'primary.main', mb: 2, filter: 'drop-shadow(0 2px 8px #d32f2f)' }} />
               <Typography variant="h6" gutterBottom>
-                Gestione Studenti
+                TESSERINI INDIVIDUALI
               </Typography>
               <Typography variant="body2" color="textSecondary" align="center">
                 Visualizza e gestisci gli studenti e i loro tesserini
@@ -75,12 +79,9 @@ function Dashboard() {
               }}
               onClick={() => navigate('/student-archive')}
             >
-              <PeopleIcon sx={{ fontSize: 60, color: '#fff8e1', mb: 2 }} />
+              <PeopleIcon sx={{ fontSize: 60, color: '#fff8e1', mb: 2, filter: 'drop-shadow(0 2px 8px #d32f2f)' }} />
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 900, letterSpacing: 2 }}>
-                Archivio Studenti (anni '70)
-              </Typography>
-              <Typography variant="body2" align="center" sx={{ color: '#fff8e1' }}>
-                Visualizza tutti gli studenti in stile vintage!
+                Archivio Tesserini
               </Typography>
             </Paper>
           </Grid>

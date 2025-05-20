@@ -375,7 +375,7 @@ function StudentCard() {
                 onClick={() => handleAvailableLessonClick(lessonIndex, lesson)}
               >
                 <Box sx={{ background: 'orange', borderRadius: 3, px: 0.7, py: 0.2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {lessonIndex + 1}
+                  {/* {lessonIndex + 1} */}
                 </Box>
               </Box>
             ;

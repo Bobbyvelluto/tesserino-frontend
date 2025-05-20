@@ -34,18 +34,10 @@ function StudentArchive() {
   return (
     <Box sx={{
       minHeight: '100vh',
-      bgcolor: seventiesColors[3],
+      bgcolor: '#232323',
       p: 4,
     }}>
-      <Typography variant="h3" align="center" sx={{
-        fontFamily: 'Impact, Oswald, Arial, sans-serif',
-        color: seventiesColors[0],
-        mb: 4,
-        letterSpacing: 2,
-        textShadow: '0 2px 8px #79554888',
-      }}>
-        Archivio Studenti
-      </Typography>
+      {/* Titolo rimosso per look palestra */}
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
           <CircularProgress color="warning" />
@@ -55,38 +47,43 @@ function StudentArchive() {
           {students.map((student, idx) => (
             <Grid item xs={12} sm={6} md={4} key={student._id}>
               <Box sx={{
-                bgcolor: seventiesColors[idx % seventiesColors.length],
-                borderRadius: 6,
-                boxShadow: '0 8px 32px #79554855',
+                bgcolor: '#111',
+                borderRadius: 8,
+                boxShadow: '0 4px 24px #000a',
                 p: 3,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                border: '4px solid #fff8e1',
+                border: '4px solid #d32f2f',
                 minHeight: 220,
                 position: 'relative',
                 transition: 'transform 0.2s',
                 '&:hover': {
-                  transform: 'scale(1.04) rotate(-2deg)',
-                  boxShadow: '0 16px 48px #d8431555',
+                  transform: 'scale(1.04)',
+                  boxShadow: '0 16px 48px #d32f2f88',
                 },
               }}>
-                <PersonIcon sx={{ fontSize: 48, color: '#fff8e1', mb: 1, textShadow: '0 2px 8px #d8431588' }} />
+                <PersonIcon sx={{ fontSize: 48, color: '#fff', mb: 1, textShadow: '0 2px 8px #d32f2f88' }} />
                 <Typography variant="h5" sx={{
-                  fontFamily: 'Oswald, Impact, Arial, sans-serif',
+                  fontFamily: 'Oswald, Impact, Arial Black, sans-serif',
                   fontWeight: 900,
-                  color: '#fff8e1',
-                  textShadow: '0 2px 8px #222b',
+                  color: '#fff',
+                  textShadow: '0 2px 8px #d32f2f',
                   mb: 1,
                   letterSpacing: 2,
                   textTransform: 'uppercase',
+                  fontSize: 28,
+                  borderBottom: '2px solid #d32f2f',
+                  pb: 1,
+                  width: '100%',
+                  textAlign: 'center',
                 }}>
                   {student.name}
                 </Typography>
-                <Typography variant="body1" sx={{ color: seventiesColors[3], mb: 1, fontWeight: 700, fontFamily: 'monospace' }}>
+                <Typography variant="body1" sx={{ color: '#fff', mb: 1, fontWeight: 700, fontFamily: 'monospace', fontSize: 18 }}>
                   {student.telefono}
                 </Typography>
-                <Typography variant="body2" sx={{ color: '#fff8e1', mb: 2, fontWeight: 700 }}>
+                <Typography variant="body2" sx={{ color: '#d32f2f', mb: 2, fontWeight: 900, fontSize: 18, letterSpacing: 1 }}>
                   Lezioni effettuate: {getLessons(student).filter(l => l.isUsed).length} / {getLessons(student).length}
                 </Typography>
                 <Button
