@@ -39,6 +39,7 @@ function StudentList() {
   const [openTessDialog, setOpenTessDialog] = useState(false);
   const [pendingStudent, setPendingStudent] = useState(null);
   const navigate = useNavigate();
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     fetchStudents();
@@ -46,7 +47,7 @@ function StudentList() {
 
   const fetchStudents = async () => {
     try {
-      const response = await axios.get('https://tesserino-virtuale1.onrender.com/api/students', {
+      const response = await axios.get(`${apiUrl}/api/students`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setStudents(response.data);
@@ -57,11 +58,11 @@ function StudentList() {
 
   const handleAddStudent = async (numLessons) => {
     try {
-      await axios.post('https://tesserino-virtuale1.onrender.com/api/students', pendingStudent, {
+      await axios.post(`${apiUrl}/api/students`, pendingStudent, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       }).then(async res => {
         // Dopo aver creato lo studente, aggiungi il tesserino scelto
-        await axios.post(`https://tesserino-virtuale1.onrender.com/api/students/${res.data._id}/tesserini`, { numLessons }, {
+        await axios.post(`${apiUrl}/api/students/${res.data._id}/tesserini`, { numLessons }, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
       });
@@ -78,7 +79,7 @@ function StudentList() {
   const handleDeleteStudent = async (id) => {
     if (window.confirm('Sei sicuro di voler eliminare questo studente?')) {
       try {
-        await axios.delete(`https://tesserino-virtuale1.onrender.com/api/students/${id}`, {
+        await axios.delete(`${apiUrl}/api/students/${id}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         fetchStudents();
@@ -121,7 +122,7 @@ function StudentList() {
 
   const handleEditStudentSave = async () => {
     try {
-      await axios.patch(`https://tesserino-virtuale1.onrender.com/api/students/${editStudent._id}`, {
+      await axios.patch(`${apiUrl}/api/students/${editStudent._id}`, {
         name: editStudent.name,
         telefono: editStudent.telefono,
       }, {

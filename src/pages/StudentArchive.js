@@ -16,9 +16,10 @@ function StudentArchive() {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
-    axios.get('https://tesserino-virtuale1.onrender.com/api/students', {
+    axios.get(`${apiUrl}/api/students`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     })
       .then(res => setStudents(res.data))
@@ -117,4 +118,4 @@ function StudentArchive() {
   );
 }
 
-export default StudentArchive; 
+export default StudentArchive;

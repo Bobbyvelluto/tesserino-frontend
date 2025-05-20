@@ -32,6 +32,8 @@ function StudentCard() {
   const [lessonInfo, setLessonInfo] = useState({});
   const [openTessDialog, setOpenTessDialog] = useState(false);
 
+  const apiUrl = process.env.REACT_APP_API_URL;
+
   useEffect(() => {
     fetchStudent();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -39,7 +41,7 @@ function StudentCard() {
 
   const fetchStudent = async () => {
     try {
-      const response = await axios.get(`http://localhost:5001/api/students/${id}`, {
+      const response = await axios.get(`${apiUrl}/api/students/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setStudent(response.data);
@@ -52,7 +54,7 @@ function StudentCard() {
   const handleUndoLesson = async (lessonIndex) => {
     try {
       await axios.patch(
-        `http://localhost:5001/api/students/${id}/lessons/${lessonIndex}/undo`,
+        `${apiUrl}/api/students/${id}/lessons/${lessonIndex}/undo`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
@@ -118,7 +120,7 @@ function StudentCard() {
   const handleNewTesserino = (numLessons) => async () => {
     console.log('Creazione tesserino con', numLessons, 'moduli');
     try {
-      await axios.post(`http://localhost:5001/api/students/${id}/tesserini`, { numLessons }, {
+      await axios.post(`${apiUrl}/api/students/${id}/tesserini`, { numLessons }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setOpenTessDialog(false);
@@ -482,7 +484,7 @@ function StudentCard() {
                 title = 'Clicca per annullare la lezione';
                 onClick = async () => {
                   if (window.confirm('Vuoi annullare questa lezione?')) {
-                    await axios.patch(`https://tesserino-virtuale1.onrender.com/api/students/${student._id}/tesserini/${idx}/lessons/${lidx}/undo`, {}, {
+                    await axios.patch(`${apiUrl}/api/students/${student._id}/tesserini/${idx}/lessons/${lidx}/undo`, {}, {
                       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                     });
                     fetchStudent();
@@ -495,7 +497,7 @@ function StudentCard() {
                 title = 'Clicca per riabilitare il modulo';
                 onClick = async () => {
                   if (window.confirm('Vuoi riabilitare questo modulo?')) {
-                    await axios.patch(`https://tesserino-virtuale1.onrender.com/api/students/${student._id}/tesserini/${idx}/lessons/${lidx}/use`, {}, {
+                    await axios.patch(`${apiUrl}/api/students/${student._id}/tesserini/${idx}/lessons/${lidx}/use`, {}, {
                       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                     });
                     fetchStudent();
@@ -505,7 +507,7 @@ function StudentCard() {
                 title = 'Clicca per marcare come usata';
                 onClick = async () => {
                   if (window.confirm('Vuoi marcare questa lezione come usata?')) {
-                    await axios.patch(`https://tesserino-virtuale1.onrender.com/api/students/${student._id}/tesserini/${idx}/lessons/${lidx}/use`, {}, {
+                    await axios.patch(`${apiUrl}/api/students/${student._id}/tesserini/${idx}/lessons/${lidx}/use`, {}, {
                       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                     });
                     fetchStudent();
