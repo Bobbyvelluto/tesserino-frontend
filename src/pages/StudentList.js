@@ -356,42 +356,6 @@ function StudentList() {
           <Button onClick={handleEditStudentSave} variant="contained">Salva</Button>
         </DialogActions>
       </Dialog>
-
-      {/* Tabella dettagliata studenti */}
-      <Box sx={{ mt: 4, overflowX: 'auto', borderRadius: 2, border: '1px solid #90caf9', background: '#fff' }}>
-        <Typography variant="h6" sx={{ fontWeight: 700, color: '#1976d2', mb: 1, fontSize: 18 }}>
-          Tabella dettagliata studenti e lezioni
-        </Typography>
-        <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: '13px', minWidth: 600 }}>
-          <thead>
-            <tr style={{ background: '#e3f2fd' }}>
-              <th style={{ border: '1px solid #90caf9', padding: '4px 6px' }}>Nome</th>
-              <th style={{ border: '1px solid #90caf9', padding: '4px 6px' }}>Telefono</th>
-              {Array.from({length: 10}).map((_,i) => (
-                <th key={i} style={{ border: '1px solid #90caf9', padding: '2px 3px', width: 48, minWidth: 36, fontSize: '11px' }}>L{i+1}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {students.map(s => (
-              <tr key={s._id}>
-                <td style={{ border: '1px solid #90caf9', padding: '4px 6px', whiteSpace: 'nowrap' }}>{s.name}</td>
-                <td style={{ border: '1px solid #90caf9', padding: '4px 6px', whiteSpace: 'nowrap' }}>{s.telefono}</td>
-                {Array.from({length: 10}).map((_,i) => {
-                  const lessons = getLessons(s);
-                  const l = lessons[i];
-                  return (
-                    <td key={i} style={{ border: '1px solid #90caf9', padding: '2px 3px', color: l ? (l.isUsed ? '#d32f2f' : (l.date ? '#ff9800' : '#43a047')) : '#aaa', whiteSpace: 'nowrap', fontSize: '11px', width: 48, minWidth: 36 }}>
-                      {l ? (l.isUsed ? 'Usata' : (l.date ? 'Annullata' : 'Disponibile')) : ''}
-                      <br/>{l && l.date ? new Date(l.date).toLocaleDateString('it-IT') : ''}
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </Box>
     </Container>
   );
 }
