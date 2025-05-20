@@ -39,7 +39,7 @@ function StudentCard() {
 
   const fetchStudent = async () => {
     try {
-      const response = await axios.get(`https://tesserino-virtuale1.onrender.com/api/students/${id}`, {
+      const response = await axios.get(`http://localhost:5001/api/students/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setStudent(response.data);
@@ -52,7 +52,7 @@ function StudentCard() {
   const handleUndoLesson = async (lessonIndex) => {
     try {
       await axios.patch(
-        `https://tesserino-virtuale1.onrender.com/api/students/${id}/lessons/${lessonIndex}/undo`,
+        `http://localhost:5001/api/students/${id}/lessons/${lessonIndex}/undo`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
@@ -116,11 +116,17 @@ function StudentCard() {
 
   // Funzione per creare un nuovo tesserino con scelta moduli
   const handleNewTesserino = (numLessons) => async () => {
-    await axios.post(`https://tesserino-virtuale1.onrender.com/api/students/${id}/tesserini`, { numLessons }, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-    });
-    setOpenTessDialog(false);
-    fetchStudent();
+    console.log('Creazione tesserino con', numLessons, 'moduli');
+    try {
+      await axios.post(`http://localhost:5001/api/students/${id}/tesserini`, { numLessons }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setOpenTessDialog(false);
+      fetchStudent();
+    } catch (error) {
+      console.error('Errore nella creazione del tesserino:', error);
+      alert('Errore nella creazione del tesserino');
+    }
   };
 
   // Colore giallo dei moduli
@@ -337,7 +343,7 @@ function StudentCard() {
                   )}
                 </Box>
               </Tooltip>
-            ) : (
+            ) :
               <Box
                 key={lessonIndex}
                 sx={{
@@ -370,7 +376,7 @@ function StudentCard() {
                   {lessonIndex + 1}
                 </Box>
               </Box>
-            );
+            ;
           })}
         </Box>
         {/* Nome allievo SOTTO i moduli, con padding e sfondo verde */}
@@ -458,98 +464,78 @@ function StudentCard() {
         <Typography variant="h6" sx={{ fontWeight: 700, color: '#1976d2', mb: 1 }}>
           Storico lezioni
         </Typography>
-        {getLessons(student).map((lesson, idx) => {
-          let stato = 'Disponibile';
-          let colore = '#43a047';
-          if (lesson.isUsed && lesson.date) {
-            stato = 'Usata';
-            colore = '#d32f2f';
-          } else if (!lesson.isUsed && lesson.date) {
-            stato = 'Annullata';
-            colore = '#ff9800';
-          }
-          return (
-            <Box key={idx} sx={{ display: 'flex', alignItems: 'center', mb: 1, gap: 2 }}>
-              <Typography sx={{ width: 32, fontWeight: 700, color: '#1976d2' }}>#{idx + 1}</Typography>
-              <Typography sx={{ flex: 1, color: '#333' }}>
-                {lesson.date ? new Date(lesson.date).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }) : '-'}
-              </Typography>
-              <Typography sx={{ fontWeight: 700, color: colore }}>{stato}</Typography>
-            </Box>
-          );
-        })}
-        {(!student.tesserini || student.tesserini.length === 0) ? (
-          <Box sx={{ mt: 3, textAlign: 'center' }}>
-            <Typography variant="h6" color="error" sx={{ mb: 2 }}>
-              Nessun tesserino attivo per questo studente.
+        {student.tesserini.map((tess, idx) => (
+          <Box key={idx} sx={{ mb: 2, p: 2, border: '2px solid #1976d2', borderRadius: 2, bgcolor: '#f5faff' }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+              Tesserino #{idx + 1} (attivato il {new Date(tess.attivatoIl).toLocaleDateString('it-IT')})
             </Typography>
-            <Button
-              variant="contained"
-              color="success"
-              onClick={async () => {
-                await axios.post(`https://tesserino-virtuale1.onrender.com/api/students/${student._id}/tesserini`, {}, {
-                  headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-                });
-                fetchStudent();
-              }}
-            >
-              Nuovo tesserino
-            </Button>
+            {tess.lessons.map((lesson, lidx) => {
+              let stato = 'Disponibile';
+              let colore = '#43a047';
+              let contenuto = lidx + 1;
+              let title = '';
+              let onClick = undefined;
+              if (lesson.isUsed && lesson.date) {
+                stato = 'Usata';
+                colore = '#d32f2f';
+                contenuto = lidx + 1 + ' ✓';
+                title = 'Clicca per annullare la lezione';
+                onClick = async () => {
+                  if (window.confirm('Vuoi annullare questa lezione?')) {
+                    await axios.patch(`https://tesserino-virtuale1.onrender.com/api/students/${student._id}/tesserini/${idx}/lessons/${lidx}/undo`, {}, {
+                      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+                    });
+                    fetchStudent();
+                  }
+                };
+              } else if (!lesson.isUsed && lesson.undoDate) {
+                stato = 'Annullata';
+                colore = '#ff9800';
+                contenuto = new Date(lesson.undoDate).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+                title = 'Clicca per riabilitare il modulo';
+                onClick = async () => {
+                  if (window.confirm('Vuoi riabilitare questo modulo?')) {
+                    await axios.patch(`https://tesserino-virtuale1.onrender.com/api/students/${student._id}/tesserini/${idx}/lessons/${lidx}/use`, {}, {
+                      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+                    });
+                    fetchStudent();
+                  }
+                };
+              } else {
+                title = 'Clicca per marcare come usata';
+                onClick = async () => {
+                  if (window.confirm('Vuoi marcare questa lezione come usata?')) {
+                    await axios.patch(`https://tesserino-virtuale1.onrender.com/api/students/${student._id}/tesserini/${idx}/lessons/${lidx}/use`, {}, {
+                      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+                    });
+                    fetchStudent();
+                  }
+                };
+              }
+              return (
+                <Box
+                  key={lidx}
+                  sx={{
+                    display: 'inline-block',
+                    mr: 1, mb: 1, px: 1, py: 0.5, borderRadius: 2,
+                    bgcolor: lesson.isUsed ? '#d32f2f22' : (lesson.undoDate ? '#ff980022' : '#43a04722'),
+                    color: colore,
+                    fontWeight: 700, position: 'relative',
+                    cursor: 'pointer',
+                    transition: 'background 0.2s',
+                    '&:hover': { bgcolor: '#ff980055' },
+                    minWidth: 60,
+                    textAlign: 'center',
+                  }}
+                  onClick={onClick}
+                  title={title}
+                >
+                  {contenuto}
+                </Box>
+              );
+            })}
           </Box>
-        ) : (
-          <Box sx={{ mt: 3 }}>
-            {student.tesserini.map((tess, idx) => (
-              <Box key={idx} sx={{ mb: 2, p: 2, border: '2px solid #1976d2', borderRadius: 2, bgcolor: '#f5faff' }}>
-                <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-                  Tesserino #{idx + 1} (attivato il {new Date(tess.attivatoIl).toLocaleDateString('it-IT')})
-                </Typography>
-                {tess.lessons.map((lesson, lidx) => (
-                  <Box
-                    key={lidx}
-                    sx={{
-                      display: 'inline-block',
-                      mr: 1, mb: 1, px: 1, py: 0.5, borderRadius: 2,
-                      bgcolor: lesson.isUsed ? '#d32f2f22' : '#43a04722',
-                      color: lesson.isUsed ? '#d32f2f' : '#43a047',
-                      fontWeight: 700, position: 'relative',
-                      cursor: (lesson.isUsed || (localStorage.getItem('token') && !lesson.isUsed)) ? 'pointer' : 'default',
-                      transition: 'background 0.2s',
-                      '&:hover': (lesson.isUsed || (localStorage.getItem('token') && !lesson.isUsed)) ? { bgcolor: '#ff980055' } : {},
-                    }}
-                    onClick={lesson.isUsed
-                      ? async () => {
-                          if (window.confirm('Vuoi annullare questa lezione?')) {
-                            await axios.patch(`https://tesserino-virtuale1.onrender.com/api/students/${student._id}/tesserini/${idx}/lessons/${lidx}/undo`, {}, {
-                              headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-                            });
-                            fetchStudent();
-                          }
-                        }
-                      : (localStorage.getItem('token') && !lesson.isUsed
-                        ? async () => {
-                            if (window.confirm('Vuoi marcare questa lezione come usata?')) {
-                              await axios.patch(`https://tesserino-virtuale1.onrender.com/api/students/${student._id}/tesserini/${idx}/lessons/${lidx}/use`, {}, {
-                                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-                              });
-                              fetchStudent();
-                            }
-                          }
-                        : undefined)
-                    }
-                    title={lesson.isUsed ? 'Clicca per annullare la lezione' : (localStorage.getItem('token') && !lesson.isUsed ? 'Clicca per marcare come usata' : '')}
-                  >
-                    {lidx + 1} {lesson.isUsed ? '✓' : ''}
-                    {lesson.undoDate && (
-                      <span style={{ fontSize: 10, color: '#ff9800', marginLeft: 4 }}>
-                        (Annullata il {new Date(lesson.undoDate).toLocaleString('it-IT')})
-                      </span>
-                    )}
-                  </Box>
-                ))}
-              </Box>
-            ))}
-          </Box>
-        )}
+        ))}
       </Box>
     </Container>
   );
