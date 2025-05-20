@@ -248,138 +248,138 @@ function StudentCard() {
           </Box>
         )}
         {/* Sfondo immagine e overlay */}
-        <img
-          src="/main.jpg"
-          alt="Boxe BG"
-          style={{
+          <img
+            src="/main.jpg"
+            alt="Boxe BG"
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              zIndex: 0,
+              border: '4px solid #b71c1c',
+              borderRadius: '8px',
+            }}
+          />
+          <Box sx={{
             position: 'absolute',
             top: 0,
             left: 0,
             width: '100%',
             height: '100%',
-            objectFit: 'cover',
-            zIndex: 0,
-            border: '4px solid #b71c1c',
-            borderRadius: '8px',
-          }}
-        />
-        <Box sx={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          bgcolor: 'rgba(0,0,0,0.18)',
-          zIndex: 2,
-        }} />
+            bgcolor: 'rgba(0,0,0,0.18)',
+            zIndex: 2,
+          }} />
         {/* Badge lezioni: mostra solo il numero effettivo di moduli del tesserino attivo */}
-        <Box sx={{
-          position: 'absolute',
-          left: 0,
-          bottom: 70,
-          width: '100%',
-          zIndex: 4,
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 0.5,
-        }}>
+          <Box sx={{
+            position: 'absolute',
+            left: 0,
+            bottom: 70,
+            width: '100%',
+            zIndex: 4,
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 0.5,
+          }}>
           {getLessons(student).map((lesson, lessonIndex) => {
-            const dateString = lesson.date ? new Date(lesson.date).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
-            return lesson.isUsed ? (
-              <Tooltip key={lessonIndex} title={dateString ? `Lezione effettuata il ${dateString}` : ''} arrow>
+              const dateString = lesson.date ? new Date(lesson.date).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
+              return lesson.isUsed ? (
+                <Tooltip key={lessonIndex} title={dateString ? `Lezione effettuata il ${dateString}` : ''} arrow>
+                  <Box
+                    sx={{
+                      width: 38,
+                      height: 52,
+                      borderRadius: 6,
+                    bgcolor: yellowMod,
+                      border: '2.5px solid #aaa',
+                      boxShadow: 'none',
+                      opacity: 0.92,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 700,
+                      fontSize: 18,
+                      color: '#d32f2f',
+                      mb: 0,
+                      transition: 'all 0.2s',
+                      boxSizing: 'border-box',
+                      cursor: 'pointer',
+                      position: 'relative',
+                    }}
+                    onClick={() => {}}
+                  >
+                    <Box sx={{ background: 'orange', borderRadius: 3, px: 0.7, py: 0.2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      ✗
+                    </Box>
+                    {/* Bottone Annulla visibile solo se token presente (admin) */}
+                    {localStorage.getItem('token') && (
+                      <button
+                        onClick={() => handleUndoLesson(lessonIndex)}
+                        style={{
+                          position: 'absolute',
+                          top: 2,
+                          right: 2,
+                          width: 18,
+                          height: 18,
+                          background: '#ff9800',
+                          color: '#fff',
+                          border: 'none',
+                          borderRadius: '50%',
+                          fontSize: 10,
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          boxShadow: '0 1px 4px #e6510022',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          zIndex: 10,
+                        }}
+                        title="Annulla lezione"
+                      >
+                        ↺
+                      </button>
+                    )}
+                  </Box>
+                </Tooltip>
+            ) :
                 <Box
+                  key={lessonIndex}
                   sx={{
                     width: 38,
                     height: 52,
                     borderRadius: 6,
-                    bgcolor: yellowMod,
-                    border: '2.5px solid #aaa',
-                    boxShadow: 'none',
+                  bgcolor: yellowMod,
+                    border: '2.5px solid #43a047',
+                    boxShadow: '0 2px 8px #1976d233',
                     opacity: 0.92,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    cursor: 'pointer',
                     fontWeight: 700,
                     fontSize: 18,
-                    color: '#d32f2f',
+                    color: '#1976d2',
                     mb: 0,
                     transition: 'all 0.2s',
                     boxSizing: 'border-box',
-                    cursor: 'pointer',
-                    position: 'relative',
+                    '&:hover': {
+                      boxShadow: '0 0 8px #43a047',
+                      transform: 'scale(1.08)',
+                    background: 'linear-gradient(135deg, #fffde7 0%, #fff9c4 100%)',
+                    },
                   }}
-                  onClick={() => {}}
+                  onClick={() => handleAvailableLessonClick(lessonIndex, lesson)}
                 >
                   <Box sx={{ background: 'orange', borderRadius: 3, px: 0.7, py: 0.2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    ✗
-                  </Box>
-                  {/* Bottone Annulla visibile solo se token presente (admin) */}
-                  {localStorage.getItem('token') && (
-                    <button
-                      onClick={() => handleUndoLesson(lessonIndex)}
-                      style={{
-                        position: 'absolute',
-                        top: 2,
-                        right: 2,
-                        width: 18,
-                        height: 18,
-                        background: '#ff9800',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '50%',
-                        fontSize: 10,
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                        boxShadow: '0 1px 4px #e6510022',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        zIndex: 10,
-                      }}
-                      title="Annulla lezione"
-                    >
-                      ↺
-                    </button>
-                  )}
-                </Box>
-              </Tooltip>
-            ) :
-              <Box
-                key={lessonIndex}
-                sx={{
-                  width: 38,
-                  height: 52,
-                  borderRadius: 6,
-                  bgcolor: yellowMod,
-                  border: '2.5px solid #43a047',
-                  boxShadow: '0 2px 8px #1976d233',
-                  opacity: 0.92,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  fontWeight: 700,
-                  fontSize: 18,
-                  color: '#1976d2',
-                  mb: 0,
-                  transition: 'all 0.2s',
-                  boxSizing: 'border-box',
-                  '&:hover': {
-                    boxShadow: '0 0 8px #43a047',
-                    transform: 'scale(1.08)',
-                    background: 'linear-gradient(135deg, #fffde7 0%, #fff9c4 100%)',
-                  },
-                }}
-                onClick={() => handleAvailableLessonClick(lessonIndex, lesson)}
-              >
-                <Box sx={{ background: 'orange', borderRadius: 3, px: 0.7, py: 0.2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {/* {lessonIndex + 1} */}
+                  {/* Numero modulo rimosso */}
                 </Box>
               </Box>
             ;
-          })}
+            })}
         </Box>
         {/* Nome allievo SOTTO i moduli, con padding e sfondo verde */}
         <Box sx={{
@@ -466,11 +466,11 @@ function StudentCard() {
         <Typography variant="h6" sx={{ fontWeight: 700, color: '#1976d2', mb: 1 }}>
           Storico lezioni
         </Typography>
-        {student.tesserini.map((tess, idx) => (
-          <Box key={idx} sx={{ mb: 2, p: 2, border: '2px solid #1976d2', borderRadius: 2, bgcolor: '#f5faff' }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-              Tesserino #{idx + 1} (attivato il {new Date(tess.attivatoIl).toLocaleDateString('it-IT')})
-            </Typography>
+            {student.tesserini.map((tess, idx) => (
+              <Box key={idx} sx={{ mb: 2, p: 2, border: '2px solid #1976d2', borderRadius: 2, bgcolor: '#f5faff' }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+                  Tesserino #{idx + 1} (attivato il {new Date(tess.attivatoIl).toLocaleDateString('it-IT')})
+                </Typography>
             {tess.lessons.map((lesson, lidx) => {
               let stato = 'Disponibile';
               let colore = '#43a047';
@@ -483,12 +483,12 @@ function StudentCard() {
                 contenuto = lidx + 1 + ' ✓';
                 title = 'Clicca per annullare la lezione';
                 onClick = async () => {
-                  if (window.confirm('Vuoi annullare questa lezione?')) {
+                          if (window.confirm('Vuoi annullare questa lezione?')) {
                     await axios.patch(`${apiUrl}/api/students/${student._id}/tesserini/${idx}/lessons/${lidx}/undo`, {}, {
-                      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-                    });
-                    fetchStudent();
-                  }
+                              headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+                            });
+                            fetchStudent();
+                          }
                 };
               } else if (!lesson.isUsed && lesson.undoDate) {
                 stato = 'Annullata';
@@ -506,12 +506,12 @@ function StudentCard() {
               } else {
                 title = 'Clicca per marcare come usata';
                 onClick = async () => {
-                  if (window.confirm('Vuoi marcare questa lezione come usata?')) {
+                            if (window.confirm('Vuoi marcare questa lezione come usata?')) {
                     await axios.patch(`${apiUrl}/api/students/${student._id}/tesserini/${idx}/lessons/${lidx}/use`, {}, {
-                      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-                    });
-                    fetchStudent();
-                  }
+                                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+                              });
+                              fetchStudent();
+                            }
                 };
               }
               return (
@@ -533,7 +533,7 @@ function StudentCard() {
                   title={title}
                 >
                   {contenuto}
-                </Box>
+                  </Box>
               );
             })}
           </Box>

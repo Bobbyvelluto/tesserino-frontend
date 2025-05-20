@@ -182,7 +182,7 @@ function StudentList() {
         }}>
           <Typography variant="h3" sx={{ fontWeight: 900, letterSpacing: 2, fontFamily: 'Oswald, Impact, Arial, sans-serif', mb: 0 }}>
             Abbonamenti
-          </Typography>
+        </Typography>
         </Box>
         {studentsInScadenza.length > 0 && (
           <Alert severity="warning" sx={{ mb: 2 }}>

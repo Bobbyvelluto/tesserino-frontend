@@ -20,7 +20,7 @@ function Login() {
     e.preventDefault();
     // Login automatico senza controlli
     localStorage.setItem('token', 'accesso-diretto');
-    navigate('/dashboard');
+      navigate('/dashboard');
   };
 
   return (
