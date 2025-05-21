@@ -31,6 +31,7 @@ function StudentCard() {
   const [showLessonInfo, setShowLessonInfo] = useState(false);
   const [lessonInfo, setLessonInfo] = useState({});
   const [openTessDialog, setOpenTessDialog] = useState(false);
+  const [selectedTessIndex, setSelectedTessIndex] = useState(null);
 
   const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -38,6 +39,12 @@ function StudentCard() {
     fetchStudent();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  useEffect(() => {
+    if (student && student.tesserini && student.tesserini.length > 0) {
+      setSelectedTessIndex(student.tesserini.length - 1);
+    }
+  }, [student]);
 
   const fetchStudent = async () => {
     try {
@@ -88,10 +95,10 @@ function StudentCard() {
     }
   };
 
-  // Funzione helper per ottenere le lezioni dal tesserino attivo
-  const getLessons = (student) =>
-    student && student.tesserini && Array.isArray(student.tesserini) && student.tesserini.length > 0 && Array.isArray(student.tesserini[student.tesserini.length - 1].lessons)
-      ? student.tesserini[student.tesserini.length - 1].lessons
+  // Funzione helper per ottenere le lezioni dal tesserino selezionato
+  const getSelectedLessons = () =>
+    student && student.tesserini && Array.isArray(student.tesserini) && student.tesserini.length > 0 && selectedTessIndex !== null && Array.isArray(student.tesserini[selectedTessIndex].lessons)
+      ? student.tesserini[selectedTessIndex].lessons
       : [];
 
   // SVG vintage e illustrazione per il banner PWA
@@ -285,7 +292,23 @@ function StudentCard() {
             bgcolor: 'rgba(0,0,0,0.18)',
             zIndex: 2,
           }} />
-          {/* Badge lezioni: mostra solo il numero effettivo di moduli del tesserino attivo */}
+          {/* Selettore tesserino */}
+          {student.tesserini.length > 1 && (
+            <Box sx={{ mb: 2, display: 'flex', gap: 1, justifyContent: 'center' }}>
+              {student.tesserini.map((tess, idx) => (
+                <Button
+                  key={idx}
+                  variant={selectedTessIndex === idx ? 'contained' : 'outlined'}
+                  color={selectedTessIndex === idx ? 'primary' : 'inherit'}
+                  size="small"
+                  onClick={() => setSelectedTessIndex(idx)}
+                >
+                  Tesserino #{idx + 1}
+                </Button>
+              ))}
+            </Box>
+          )}
+          {/* Badge lezioni: mostra i moduli del tesserino selezionato */}
           <Box sx={{
             position: 'absolute',
             left: 0,
@@ -298,8 +321,9 @@ function StudentCard() {
             justifyContent: 'center',
             gap: 0.5,
           }}>
-            {getLessons(student).map((lesson, lessonIndex) => {
+            {getSelectedLessons().map((lesson, lessonIndex) => {
               const dateString = lesson.date ? new Date(lesson.date).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
+              const undoDateString = lesson.undoDate ? new Date(lesson.undoDate).toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
               return lesson.isUsed ? (
                 <Tooltip key={lessonIndex} title={dateString ? `Lezione effettuata il ${dateString}` : ''} arrow>
                   <Box
@@ -323,7 +347,6 @@ function StudentCard() {
                       cursor: 'pointer',
                       position: 'relative',
                     }}
-                    onClick={() => {}}
                   >
                     <Box sx={{ background: 'orange', borderRadius: 3, px: 0.7, py: 0.2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       ✗
@@ -358,7 +381,41 @@ function StudentCard() {
                     )}
                   </Box>
                 </Tooltip>
-              ) :
+              ) : lesson.undoDate ? (
+                <Tooltip key={lessonIndex} title={undoDateString ? `Modulo annullato il ${undoDateString}` : ''} arrow>
+                  <Box
+                    sx={{
+                      width: 38,
+                      height: 52,
+                      borderRadius: 6,
+                      bgcolor: blueMod,
+                      border: '2.5px solid #43a047',
+                      boxShadow: '0 2px 8px #1976d233',
+                      opacity: 0.92,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontWeight: 700,
+                      fontSize: 18,
+                      color: '#1976d2',
+                      mb: 0,
+                      transition: 'all 0.2s',
+                      boxSizing: 'border-box',
+                      '&:hover': {
+                        boxShadow: '0 0 8px #43a047',
+                        transform: 'scale(1.08)',
+                        background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+                      },
+                    }}
+                    onClick={() => handleAvailableLessonClick(lessonIndex, lesson)}
+                  >
+                    <Box sx={{ background: 'orange', borderRadius: 3, px: 0.7, py: 0.2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {lessonIndex + 1}
+                    </Box>
+                  </Box>
+                </Tooltip>
+              ) : (
                 <Box
                   key={lessonIndex}
                   sx={{
@@ -391,7 +448,7 @@ function StudentCard() {
                     {lessonIndex + 1}
                   </Box>
                 </Box>
-              ;
+              );
             })}
           </Box>
           {/* Nome allievo SOTTO i moduli, con padding e sfondo verde */}
