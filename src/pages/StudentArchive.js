@@ -31,101 +31,97 @@ function StudentArchive() {
       ? student.tesserini[student.tesserini.length - 1].lessons
       : [];
 
+  // Ordina gli studenti in ordine alfabetico per nome
+  const sortedStudents = [...students].sort((a, b) => a.name.localeCompare(b.name));
+
   return (
-    <Box sx={{
-      minHeight: '100vh',
-      bgcolor: '#232323',
-      p: 4,
-    }}>
-      {/* Titolo rimosso per look palestra */}
-      {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
-          <CircularProgress color="warning" />
+    <Container maxWidth="md" sx={{ mt: 4 }}>
+      <Paper elevation={3} sx={{
+        p: 3,
+        border: '4px solid #b5d8fa',
+        boxShadow: '0 8px 32px #b5d8fa55',
+        background: 'linear-gradient(135deg, #23272f 0%, #444950 100%)',
+        borderRadius: 6,
+        color: 'inherit',
+        minHeight: '70vh',
+        display: 'flex',
+        flexDirection: 'column',
+      }}>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 4 }}>
+          <Button
+            variant="outlined"
+            onClick={() => navigate('/dashboard')}
+            sx={{ borderColor: '#b48a00', color: '#b48a00', fontWeight: 600, ':hover': { borderColor: '#b48a00', background: '#fff8e1' } }}
+          >
+            Torna alla Dashboard
+          </Button>
         </Box>
-      ) : (
-        <Container maxWidth="lg" sx={{ mt: 4 }}>
-          <Box sx={{ 
-            bgcolor: '#232323',
-            borderRadius: 4,
-            p: 4,
-            boxShadow: '0 8px 32px #000a',
-            border: '4px solid #d32f2f',
-            background: 'linear-gradient(135deg, #232323 0%, #444 100%)'
-          }}>
-            <Grid container spacing={3}>
-              {students.map((student, idx) => (
-                <Grid item xs={12} sm={6} md={4} key={student._id}>
-                  <Paper
-                    elevation={3}
-                    sx={{
-                      bgcolor: '#111',
-                      borderRadius: 8,
-                      boxShadow: '0 4px 24px #000a',
-                      p: 3,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      border: '4px solid #d32f2f',
-                      minHeight: 220,
-                      position: 'relative',
-                      transition: 'transform 0.2s',
-                      '&:hover': {
-                        transform: 'scale(1.04)',
-                        boxShadow: '0 16px 48px #d32f2f88',
-                      },
-                    }}
-                  >
-                    <PersonIcon sx={{ fontSize: 48, color: '#fff', mb: 1, textShadow: '0 2px 8px #d32f2f88' }} />
-                    <Typography variant="h5" sx={{
-                      fontFamily: 'Oswald, Impact, Arial Black, sans-serif',
-                      fontWeight: 900,
-                      color: '#fff',
-                      textShadow: '0 2px 8px #d32f2f',
-                      mb: 1,
-                      letterSpacing: 2,
-                      textTransform: 'uppercase',
-                      fontSize: 28,
-                      borderBottom: '2px solid #d32f2f',
-                      pb: 1,
-                      width: '100%',
-                      textAlign: 'center',
-                    }}>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <Paper
+              elevation={2}
+              sx={{
+                p: 3,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                background: 'linear-gradient(135deg, #ffe29a 0%, #ffb347 100%)',
+                borderRadius: 4,
+                boxShadow: '0 4px 16px #ffb34744',
+                border: '2px solid #ffb347',
+                mb: 3,
+              }}
+            >
+              <Typography variant="h4" sx={{ color: '#b48a00', fontWeight: 700, mb: 2, letterSpacing: 2 }}>
+                ARCHIVIO TESSERINI
+              </Typography>
+              <Typography variant="body1" sx={{ color: '#b48a00', mb: 2 }}>
+                Elenco di tutti i tesserini degli studenti
+              </Typography>
+            </Paper>
+          </Grid>
+          <Grid item xs={12}>
+            <Box sx={{ flex: 1, overflowY: 'auto', pr: 1 }}>
+              {sortedStudents.map((student, idx) => (
+                <Paper
+                  key={student._id}
+                  elevation={2}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    mb: 2,
+                    p: 2,
+                    borderRadius: 4,
+                    boxShadow: '0 2px 8px #ffb34744',
+                    background: 'linear-gradient(135deg, #ffe29a 0%, #ffb347 100%)',
+                    border: '2px solid #ffb347',
+                    transition: 'box-shadow 0.2s',
+                    color: '#b48a00',
+                    '&:hover': { boxShadow: '0 4px 16px #ffb34788' },
+                  }}
+                >
+                  <PersonIcon sx={{ fontSize: 36, color: '#b48a00', mr: 2, textShadow: '0 2px 8px #fff8' }} />
+                  <Box sx={{ flex: 1 }}>
+                    <Typography sx={{ fontFamily: 'Personal Services, Arial, sans-serif', fontWeight: 900, fontSize: 20, color: '#b48a00', mb: 0.5, textShadow: '1px 1px 6px #ffb347', textTransform: 'uppercase' }}>
                       {student.name}
                     </Typography>
-                    <Typography variant="body1" sx={{ color: '#fff', mb: 1, fontWeight: 700, fontFamily: 'monospace', fontSize: 18 }}>
-                      {student.telefono}
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#d32f2f', mb: 2, fontWeight: 900, fontSize: 18, letterSpacing: 1 }}>
-                      Lezioni effettuate: {getLessons(student).filter(l => l.isUsed).length} / {getLessons(student).length}
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      sx={{
-                        bgcolor: seventiesColors[2],
-                        color: '#fff8e1',
-                        fontWeight: 900,
-                        borderRadius: 3,
-                        boxShadow: '0 2px 8px #2228',
-                        letterSpacing: 2,
-                        fontFamily: 'Oswald, Impact, Arial, sans-serif',
-                        mt: 1,
-                        '&:hover': {
-                          bgcolor: seventiesColors[4],
-                          color: seventiesColors[1],
-                        },
-                      }}
-                      onClick={() => navigate(`/student/${student._id}`)}
-                    >
-                      VEDI DETTAGLI
-                    </Button>
-                  </Paper>
-                </Grid>
+                    <Typography sx={{ fontSize: 15, color: '#b48a00' }}>{student.telefono}</Typography>
+                  </Box>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    sx={{ borderRadius: 2, fontWeight: 700, fontFamily: 'Personal Services, Arial, sans-serif', bgcolor: '#b48a00', color: '#fff', ':hover': { bgcolor: '#a37c00' } }}
+                    onClick={() => navigate(`/student/${student._id}`)}
+                  >
+                    Vedi
+                  </Button>
+                </Paper>
               ))}
-            </Grid>
-          </Box>
-        </Container>
-      )}
-    </Box>
+            </Box>
+          </Grid>
+        </Grid>
+      </Paper>
+    </Container>
   );
 }
 
