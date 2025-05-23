@@ -473,13 +473,13 @@ function StudentCard() {
               <Typography
                 align="center"
                 sx={{
-                  fontFamily: "'Personal Services', Arial, sans-serif",
+                  fontFamily: "'Cheer Forever', Arial, sans-serif !important",
                   fontWeight: 900,
                   letterSpacing: 2,
-                  color: '#fff',
-                  textShadow: '1px 1px 6px #bbb',
+                  color: '#b48a00',
+                  textShadow: '1px 1px 4px #1976d2',
                   m: 0,
-                  fontSize: 20,
+                  fontSize: 24,
                   textTransform: 'uppercase',
                   lineHeight: 1.1,
                 }}

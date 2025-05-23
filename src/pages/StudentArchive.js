@@ -102,7 +102,17 @@ function StudentArchive() {
               >
                   <PersonIcon sx={{ fontSize: 36, color: '#b48a00', mr: 2, textShadow: '0 2px 8px #fff8' }} />
                 <Box sx={{ flex: 1 }}>
-                    <Typography sx={{ fontFamily: 'Personal Services, Arial, sans-serif', fontWeight: 900, fontSize: 20, color: '#b48a00', mb: 0.5, textShadow: '1px 1px 6px #ffb347', textTransform: 'uppercase' }}>
+                    <Typography
+                      sx={{
+                        fontFamily: "'Front Page Neue', Arial, sans-serif !important",
+                        fontWeight: 900,
+                        fontSize: 24,
+                        color: '#23272f',
+                        textShadow: '1px 1px 4px #e0e0e0',
+                        textTransform: 'uppercase',
+                        mb: 0.5,
+                      }}
+                    >
                     {student.name}
                   </Typography>
                     <Typography sx={{ fontSize: 15, color: '#b48a00' }}>{student.telefono}</Typography>

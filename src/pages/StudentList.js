@@ -279,7 +279,17 @@ function StudentList() {
                 <span role="img" aria-label="user">👤</span>
               </Box>
               <Box sx={{ flex: 1 }}>
-                    <Typography sx={{ fontFamily: 'Personal Services, Arial, sans-serif', fontWeight: 900, fontSize: 20, color: '#588157', mb: 0.5, textShadow: '1px 1px 6px #bbb', textTransform: 'uppercase' }}>
+                    <Typography
+                      sx={{
+                        fontFamily: "'Front Page Neue', Arial, sans-serif !important",
+                        fontWeight: 900,
+                        fontSize: 24,
+                        color: '#23272f',
+                        textShadow: '1px 1px 4px #e0e0e0',
+                        textTransform: 'uppercase',
+                        mb: 0.5,
+                      }}
+                    >
                   {student.name}
                 </Typography>
                 <Typography sx={{ fontSize: 15, color: '#888' }}>{student.telefono}</Typography>
