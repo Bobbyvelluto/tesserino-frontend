@@ -463,29 +463,25 @@ function StudentCard() {
             justifyContent: 'center',
           }}>
             <Box sx={{
-              bgcolor: nameBoxColor,
+              bgcolor: 'rgba(51,51,51,0.7)', // grigio scuro 70%
               borderRadius: 3,
               px: 3,
-              py: 1.5,
-              boxShadow: '0 2px 8px #43a04755',
-              border: '2px solid #fffde7',
-              minWidth: 120,
-              textAlign: 'center',
+              py: 1.2,
+              display: 'inline-block',
+              mx: 'auto',
             }}>
               <Typography
                 align="center"
                 sx={{
-                  fontFamily: "'Oswald', Impact, Arial, sans-serif",
+                  fontFamily: "'Personal Services', Arial, sans-serif",
                   fontWeight: 900,
                   letterSpacing: 2,
                   color: '#fff',
-                  textShadow: '0 2px 8px #222b',
+                  textShadow: '1px 1px 6px #bbb',
                   m: 0,
-                  fontSize: 22,
+                  fontSize: 20,
                   textTransform: 'uppercase',
                   lineHeight: 1.1,
-                  px: 1.5,
-                  borderRadius: 3,
                 }}
               >
                 {student.name}

@@ -213,88 +213,88 @@ function StudentList() {
               <Typography variant="body1" sx={{ color: '#588157', mb: 2 }}>
                 Visualizza e gestisci gli studenti e i loro tesserini
               </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 2 }}>
-                <TextField
-                  placeholder="Cerca per nome o telefono"
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={{ width: 260 }}
-                />
-                <ToggleButtonGroup
-                  value={filter}
-                  exclusive
-                  onChange={(e, v) => v && setFilter(v)}
-                  size="small"
-                >
-                  <ToggleButton value="all">Tutti</ToggleButton>
-                  <ToggleButton value="active">Con lezioni residue</ToggleButton>
-                  <ToggleButton value="finished">Tesserino esaurito</ToggleButton>
-                </ToggleButtonGroup>
-              </Box>
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                onClick={() => setOpen(true)}
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 2 }}>
+          <TextField
+            placeholder="Cerca per nome o telefono"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+            sx={{ width: 260 }}
+          />
+          <ToggleButtonGroup
+            value={filter}
+            exclusive
+            onChange={(e, v) => v && setFilter(v)}
+            size="small"
+          >
+            <ToggleButton value="all">Tutti</ToggleButton>
+            <ToggleButton value="active">Con lezioni residue</ToggleButton>
+            <ToggleButton value="finished">Tesserino esaurito</ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => setOpen(true)}
                 sx={{ mb: 2, bgcolor: '#588157', color: '#fff', fontWeight: 700, ':hover': { bgcolor: '#3e6b3e' } }}
-              >
-                Aggiungi Studente
-              </Button>
-              <Button
-                variant="outlined"
+        >
+          Aggiungi Studente
+        </Button>
+        <Button
+          variant="outlined"
                 sx={{ ml: 2, mb: 2, borderColor: '#a3b18a', color: '#588157', fontWeight: 600, ':hover': { borderColor: '#588157', background: '#e9f5db' } }}
-                onClick={exportCSV}
-              >
-                Esporta CSV
-              </Button>
+          onClick={exportCSV}
+        >
+          Esporta CSV
+        </Button>
             </Paper>
           </Grid>
           <Grid item xs={12}>
-            <Box sx={{ flex: 1, overflowY: 'auto', pr: 1 }}>
-              {filteredStudents.map((student) => (
-                <Paper
-                  key={student._id}
-                  elevation={2}
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    mb: 2,
-                    p: 2,
-                    borderRadius: 4,
+        <Box sx={{ flex: 1, overflowY: 'auto', pr: 1 }}>
+          {filteredStudents.map((student) => (
+            <Paper
+              key={student._id}
+              elevation={2}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                mb: 2,
+                p: 2,
+                borderRadius: 4,
                     boxShadow: '0 2px 8px #a3e4b744',
                     background: 'linear-gradient(135deg, #d0f5df 0%, #a3e4b7 100%)',
                     border: '2px solid #a3e4b7',
-                    transition: 'box-shadow 0.2s',
+                transition: 'box-shadow 0.2s',
                     '&:hover': { boxShadow: '0 4px 16px #a3e4b788' },
-                  }}
-                >
-                  <Box sx={{ width: 48, height: 48, borderRadius: '50%', overflow: 'hidden', bgcolor: '#eee', mr: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
-                    {/* Qui puoi mettere una foto profilo se disponibile, altrimenti icona */}
-                    <span role="img" aria-label="user">👤</span>
-                  </Box>
-                  <Box sx={{ flex: 1 }}>
+              }}
+            >
+              <Box sx={{ width: 48, height: 48, borderRadius: '50%', overflow: 'hidden', bgcolor: '#eee', mr: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
+                {/* Qui puoi mettere una foto profilo se disponibile, altrimenti icona */}
+                <span role="img" aria-label="user">👤</span>
+              </Box>
+              <Box sx={{ flex: 1 }}>
                     <Typography sx={{ fontFamily: 'Personal Services, Arial, sans-serif', fontWeight: 900, fontSize: 20, color: '#588157', mb: 0.5, textShadow: '1px 1px 6px #bbb', textTransform: 'uppercase' }}>
-                      {student.name}
-                    </Typography>
-                    <Typography sx={{ fontSize: 15, color: '#888' }}>{student.telefono}</Typography>
-                  </Box>
-                  <Button
-                    variant="contained"
-                    size="small"
+                  {student.name}
+                </Typography>
+                <Typography sx={{ fontSize: 15, color: '#888' }}>{student.telefono}</Typography>
+              </Box>
+              <Button
+                variant="contained"
+                size="small"
                     sx={{ borderRadius: 2, fontWeight: 700, fontFamily: 'Personal Services, Arial, sans-serif', bgcolor: '#588157', color: '#fff', ':hover': { bgcolor: '#3e6b3e' } }}
-                    onClick={() => navigate(`/student/${student._id}`)}
-                  >
-                    Vedi
-                  </Button>
-                </Paper>
-              ))}
-            </Box>
+                onClick={() => navigate(`/student/${student._id}`)}
+              >
+                Vedi
+              </Button>
+            </Paper>
+          ))}
+        </Box>
           </Grid>
         </Grid>
       </Paper>
