@@ -22,7 +22,7 @@ import {
   Alert,
   Grid,
 } from '@mui/material';
-import { Add as AddIcon, Visibility as VisibilityIcon, ContentCopy as ContentCopyIcon, QrCode as QrCodeIcon, Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
+import { Add as AddIcon, Visibility as VisibilityIcon, ContentCopy as ContentCopyIcon, QrCode as QrCodeIcon, Delete as DeleteIcon, Edit as EditIcon, Link as LinkIcon } from '@mui/icons-material';
 import axios from 'axios';
 import SearchIcon from '@mui/icons-material/Search';
 import { saveAs } from 'file-saver';
@@ -39,6 +39,8 @@ function StudentList() {
   const [filter, setFilter] = useState('all');
   const [openTessDialog, setOpenTessDialog] = useState(false);
   const [pendingStudent, setPendingStudent] = useState(null);
+  const [linkQrOpen, setLinkQrOpen] = useState(false);
+  const [linkQrStudent, setLinkQrStudent] = useState(null);
   const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -153,13 +155,16 @@ function StudentList() {
 
   const exportCSV = () => {
     const header = ['Nome', 'Telefono', 'Lezioni Usate', 'Lezioni Totali', 'Storico Lezioni'];
-    const rows = students.map(s => [
-      s.name,
-      s.telefono,
-      s.lessons.filter(l => l.isUsed).length,
-      s.lessons.length,
-      s.lessons.map((l, i) => `#${i+1}:${l.isUsed ? 'Usata' : (l.date ? 'Annullata' : 'Disponibile')}@${l.date ? new Date(l.date).toLocaleString('it-IT') : '-'}`).join(' | ')
-    ]);
+    const rows = students.map(s => {
+      const lessons = getLessons(s);
+      return [
+        s.name,
+        s.telefono,
+        lessons.filter(l => l.isUsed).length,
+        lessons.length,
+        lessons.map((l, i) => `#${i+1}:${l.isUsed ? 'Usata' : (l.date ? 'Annullata' : 'Disponibile')}@${l.date ? new Date(l.date).toLocaleString('it-IT') : '-'}`).join(' | ')
+      ];
+    });
     const csv = [header, ...rows].map(r => r.map(x => `"${x}"`).join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     saveAs(blob, 'studenti_tesserini.csv');
@@ -294,14 +299,47 @@ function StudentList() {
                 </Typography>
                 <Typography sx={{ fontSize: 15, color: '#888' }}>{student.telefono}</Typography>
               </Box>
-              <Button
-                variant="contained"
-                size="small"
-                    sx={{ borderRadius: 2, fontWeight: 700, fontFamily: 'Personal Services, Arial, sans-serif', bgcolor: '#588157', color: '#fff', ':hover': { bgcolor: '#3e6b3e' } }}
-                onClick={() => navigate(`/student/${student._id}`)}
-              >
-                Vedi
-              </Button>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1, alignItems: 'center' }}>
+                <Button
+                  variant="outlined"
+                  color="success"
+                  size="small"
+                  sx={{ mr: 1, mb: { xs: 1, md: 0 } }}
+                  onClick={() => navigate(`/student/${student._id}`)}
+                >
+                  Vedi
+                </Button>
+                {/* Pulsante Link & QR */}
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  size="small"
+                  startIcon={<LinkIcon />}
+                  sx={{ mr: 1 }}
+                  onClick={() => { setLinkQrStudent(student); setLinkQrOpen(true); }}
+                >
+                  Link & QR
+                </Button>
+                {/* Modifica */}
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  size="small"
+                  sx={{ mr: 1 }}
+                  onClick={() => handleEditStudent(student)}
+                >
+                  Modifica
+                </Button>
+                {/* Cancella */}
+                <Button
+                  variant="outlined"
+                  color="error"
+                  size="small"
+                  onClick={() => handleDeleteStudent(student._id)}
+                >
+                  Cancella
+                </Button>
+              </Box>
             </Paper>
           ))}
         </Box>
@@ -384,6 +422,37 @@ function StudentList() {
         <DialogActions>
           <Button onClick={() => setEditOpen(false)}>Annulla</Button>
           <Button onClick={handleEditStudentSave} variant="contained">Salva</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Dialog Link & QR */}
+      <Dialog open={linkQrOpen} onClose={() => setLinkQrOpen(false)}>
+        <DialogTitle>Link e QR Tesserino</DialogTitle>
+        <DialogContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+          {linkQrStudent && (
+            <>
+              <Typography sx={{ fontSize: 15, mb: 1, wordBreak: 'break-all' }}>
+                {`${window.location.origin}/student/${linkQrStudent._id}`}
+              </Typography>
+              <Button
+                variant="outlined"
+                size="small"
+                startIcon={<ContentCopyIcon />}
+                onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/student/${linkQrStudent._id}`); }}
+                sx={{ mb: 2 }}
+              >
+                Copia Link
+              </Button>
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(window.location.origin + '/student/' + linkQrStudent._id)}`}
+                alt="QR Code"
+                style={{ margin: '0 auto', display: 'block', borderRadius: 8 }}
+              />
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setLinkQrOpen(false)}>Chiudi</Button>
         </DialogActions>
       </Dialog>
     </Container>

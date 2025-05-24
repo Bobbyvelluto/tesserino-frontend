@@ -1,16 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Typography, Button, Grid, CircularProgress, Container, Paper } from '@mui/material';
+import { Box, Typography, Button, CircularProgress, Container, Paper } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import axios from 'axios';
-
-const seventiesColors = [
-  '#ff9800', // arancione
-  '#ffb300', // giallo caldo
-  '#795548', // marrone
-  '#fff8e1', // crema
-  '#d84315', // rosso mattone
-];
 
 function StudentArchive() {
   const [students, setStudents] = useState([]);
@@ -24,114 +16,96 @@ function StudentArchive() {
     })
       .then(res => setStudents(res.data))
       .finally(() => setLoading(false));
-  }, []);
-
-  const getLessons = (student) =>
-    student && student.tesserini && Array.isArray(student.tesserini) && student.tesserini.length > 0 && Array.isArray(student.tesserini[student.tesserini.length - 1].lessons)
-      ? student.tesserini[student.tesserini.length - 1].lessons
-      : [];
+  }, [apiUrl]);
 
   // Ordina gli studenti in ordine alfabetico per nome
   const sortedStudents = [...students].sort((a, b) => a.name.localeCompare(b.name));
 
   return (
-    <Container maxWidth="md" sx={{ mt: 4 }}>
-      <Paper elevation={3} sx={{
-        p: 3,
-        border: '4px solid #b5d8fa',
-        boxShadow: '0 8px 32px #b5d8fa55',
-        background: 'linear-gradient(135deg, #23272f 0%, #444950 100%)',
-        borderRadius: 6,
-        color: 'inherit',
-        minHeight: '70vh',
+    <Box sx={{
+      minHeight: '100vh',
+      bgcolor: '#232323',
+      p: 4,
       display: 'flex',
       flexDirection: 'column',
+      alignItems: 'center',
     }}>
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 4 }}>
-          <Button
-            variant="outlined"
-            onClick={() => navigate('/dashboard')}
-            sx={{ borderColor: '#b48a00', color: '#b48a00', fontWeight: 600, ':hover': { borderColor: '#b48a00', background: '#fff8e1' } }}
-          >
-            Torna alla Dashboard
-          </Button>
+      {/* Logo WBBS */}
+      <img src="/logo192.png" alt="Logo WBBS" style={{ width: 120, marginBottom: 24, borderRadius: 16, boxShadow: '0 4px 24px #1976d2aa' }} />
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
+          <CircularProgress color="warning" />
         </Box>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <Paper
-              elevation={2}
-              sx={{
-                p: 3,
+      ) : (
+        <Container maxWidth="md" sx={{ mt: 4, height: '80vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <Box sx={{
+            bgcolor: '#232323',
+            borderRadius: 4,
+            p: 4,
+            boxShadow: '0 8px 32px #000a',
+            border: '4px solid #d32f2f',
+            background: 'linear-gradient(135deg, #232323 0%, #444 100%)',
+            flex: 1,
+            overflowY: 'auto',
             display: 'flex',
             flexDirection: 'column',
-                alignItems: 'center',
-                background: 'linear-gradient(135deg, #ffe29a 0%, #ffb347 100%)',
-                borderRadius: 4,
-                boxShadow: '0 4px 16px #ffb34744',
-                border: '2px solid #ffb347',
-                mb: 3,
-              }}
-            >
-              <Typography variant="h4" sx={{ color: '#b48a00', fontWeight: 700, mb: 2, letterSpacing: 2 }}>
-                ARCHIVIO TESSERINI
-              </Typography>
-              <Typography variant="body1" sx={{ color: '#b48a00', mb: 2 }}>
-                Elenco di tutti i tesserini degli studenti
-              </Typography>
-            </Paper>
-          </Grid>
-          <Grid item xs={12}>
-            <Box sx={{ flex: 1, overflowY: 'auto', pr: 1 }}>
+            gap: 2,
+          }}>
             {sortedStudents.map((student, idx) => (
               <Paper
                 key={student._id}
-                  elevation={2}
+                elevation={4}
                 sx={{
+                  bgcolor: '#181818',
+                  borderRadius: 6,
+                  boxShadow: 'none',
+                  p: 2,
                   display: 'flex',
                   alignItems: 'center',
-                    mb: 2,
-                    p: 2,
-                    borderRadius: 4,
-                    boxShadow: '0 2px 8px #ffb34744',
-                    background: 'linear-gradient(135deg, #ffe29a 0%, #ffb347 100%)',
-                    border: '2px solid #ffb347',
-                    transition: 'box-shadow 0.2s',
-                    color: '#b48a00',
-                    '&:hover': { boxShadow: '0 4px 16px #ffb34788' },
+                  border: '2px solid #a89c74',
+                  minHeight: 64,
+                  maxWidth: 600,
+                  width: '100%',
+                  mx: 'auto',
+                  transition: 'transform 0.2s, box-shadow 0.2s, border-color 0.2s',
+                  '&:hover': {
+                    transform: 'scale(1.02)',
+                    boxShadow: 'none',
+                    borderColor: '#43a047',
+                  },
                 }}
               >
-                  <PersonIcon sx={{ fontSize: 36, color: '#b48a00', mr: 2, textShadow: '0 2px 8px #fff8' }} />
+                <PersonIcon sx={{ fontSize: 36, color: '#a89c74', mr: 2, textShadow: '0 2px 8px #fff8' }} />
                 <Box sx={{ flex: 1 }}>
-                    <Typography
-                      sx={{
-                        fontFamily: "'Front Page Neue', Arial, sans-serif !important",
-                        fontWeight: 900,
-                        fontSize: 24,
-                        color: '#23272f',
-                        textShadow: '1px 1px 4px #e0e0e0',
-                        textTransform: 'uppercase',
-                        mb: 0.5,
-                      }}
-                    >
+                  <Typography sx={{
+                    fontFamily: 'Personal Services, Arial, sans-serif',
+                    fontWeight: 900,
+                    color: '#d84315',
+                    letterSpacing: 2,
+                    textTransform: 'uppercase',
+                    fontSize: 20,
+                  }}>
                     {student.name}
                   </Typography>
-                    <Typography sx={{ fontSize: 15, color: '#b48a00' }}>{student.telefono}</Typography>
+                  <Typography sx={{ color: '#90A4AE', fontWeight: 700, fontFamily: 'Personal Services, monospace', fontSize: 15 }}>
+                    <a href={`https://wa.me/${student.telefono.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" style={{ color: '#90A4AE', textDecoration: 'none' }}>
+                      {student.telefono}
+                    </a>
+                  </Typography>
                 </Box>
                 <Button
                   variant="contained"
-                    size="small"
-                    sx={{ borderRadius: 2, fontWeight: 700, fontFamily: 'Personal Services, Arial, sans-serif', bgcolor: '#b48a00', color: '#fff', ':hover': { bgcolor: '#a37c00' } }}
+                  sx={{ bgcolor: '#a89c74', color: '#fff', fontWeight: 900, borderRadius: 2, fontFamily: 'Personal Services, Arial, sans-serif', px: 3, boxShadow: '0 2px 8px #a89c7444', letterSpacing: 2, transition: 'background 0.2s', '&:hover': { bgcolor: '#43a047', color: '#fff' } }}
                   onClick={() => navigate(`/student/${student._id}`)}
                 >
-                    Vedi
+                  VEDI
                 </Button>
               </Paper>
             ))}
           </Box>
-          </Grid>
-        </Grid>
-      </Paper>
         </Container>
+      )}
+    </Box>
   );
 }
 

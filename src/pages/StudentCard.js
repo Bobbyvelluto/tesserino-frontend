@@ -535,9 +535,6 @@ function StudentCard() {
         </Typography>
         {student.tesserini.map((tess, idx) => (
           <Box key={idx} sx={{ mb: 2, p: 2, border: '2px solid #1976d2', borderRadius: 2, bgcolor: '#f5faff' }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-              Tesserino #{idx + 1} (attivato il {new Date(tess.attivatoIl).toLocaleDateString('it-IT')})
-            </Typography>
             {tess.lessons.map((lesson, lidx) => {
               let stato = 'Disponibile';
               let colore = '#43a047';
