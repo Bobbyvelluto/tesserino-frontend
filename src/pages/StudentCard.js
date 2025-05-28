@@ -259,28 +259,28 @@ function StudentCard() {
         <Box
           sx={{
             position: 'relative',
-            width: 400,
-            height: 600,
-            margin: '0 auto',
-            mt: 4,
-            borderRadius: 4,
+            width: '100%',
+            maxWidth: 400,
+            aspectRatio: '3/4',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
             overflow: 'hidden',
-            boxShadow: '0 8px 32px #000a',
-            border: '4px solid #b71c1c',
-            background: '#fff',
+            mb: 0,
+            pb: 0,
           }}
         >
           <img
             src="/main.jpg"
             alt="Boxe BG"
             style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
               width: '100%',
               height: '100%',
               objectFit: 'cover',
-              zIndex: 0
+              border: '4px solid #b71c1c',
+              borderRadius: '8px',
+              display: 'block',
             }}
           />
           <Box sx={{
@@ -292,22 +292,6 @@ function StudentCard() {
             bgcolor: 'rgba(0,0,0,0.18)',
             zIndex: 2,
           }} />
-          {/* Selettore tesserino */}
-          {student.tesserini.length > 1 && (
-            <Box sx={{ mb: 2, display: 'flex', gap: 1, justifyContent: 'center' }}>
-              {student.tesserini.map((tess, idx) => (
-                <Button
-                  key={idx}
-                  variant={selectedTessIndex === idx ? 'contained' : 'outlined'}
-                  color={selectedTessIndex === idx ? 'primary' : 'inherit'}
-                  size="small"
-                  onClick={() => setSelectedTessIndex(idx)}
-                >
-                  Tesserino #{idx + 1}
-                </Button>
-              ))}
-            </Box>
-          )}
           {/* Badge lezioni: mostra i moduli del tesserino selezionato */}
           <Box sx={{
             position: 'absolute',
