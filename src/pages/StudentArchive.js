@@ -141,15 +141,27 @@ function StudentArchive() {
                               }}
                               onClick={async () => {
                                 if (!lesson.isUsed) {
-                                  await axios.patch(`${apiUrl}/api/students/${student._id}/lessons/${lessonIdx}/undo`, {}, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
-                                  const updatedStudents = [...students];
-                                  updatedStudents[idx].tesserini[tessIdx].lessons[lessonIdx].isUsed = true;
-                                  // Imposta la data e ora attuale come feedback
-                                  const now = new Date();
-                                  const dateStr = now.toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
-                                  setSnackbarMsg(`Lezione annullata il ${dateStr}`);
-                                  setSnackbarOpen(true);
-                                  setStudents(updatedStudents);
+                                  try {
+                                    await axios.patch(`${apiUrl}/api/students/${student._id}/tesserini/${tessIdx}/lessons/${lessonIdx}/undo`, {}, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+                                    const updatedStudents = [...students];
+                                    updatedStudents[idx].tesserini[tessIdx].lessons[lessonIdx].isUsed = true;
+                                    const now = new Date();
+                                    const dateStr = now.toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+                                    setSnackbarMsg(`Lezione annullata il ${dateStr}`);
+                                    setSnackbarOpen(true);
+                                    setStudents(updatedStudents);
+                                  } catch (err) {
+                                    let msg = 'Errore annullamento: ';
+                                    if (err.response && err.response.data && err.response.data.message) {
+                                      msg += err.response.data.message;
+                                    } else if (err.message) {
+                                      msg += err.message;
+                                    } else {
+                                      msg += 'Errore sconosciuto';
+                                    }
+                                    setSnackbarMsg(msg);
+                                    setSnackbarOpen(true);
+                                  }
                                 }
                               }}
                             >
