@@ -168,10 +168,10 @@ function StudentCard() {
         <Dialog open={openTessDialog} onClose={() => setOpenTessDialog(false)}>
           <DialogTitle>Scegli il tipo di tesserino</DialogTitle>
           <DialogContent>
-            <Button variant="contained" color="primary" onClick={handleNewTesserino(10)} sx={{ m: 1 }}>
+            <Button variant="contained" color="primary" onClick={() => handleNewTesserino(10)()} sx={{ m: 1 }}>
               Tesserino 10 moduli
             </Button>
-            <Button variant="contained" color="secondary" onClick={handleNewTesserino(5)} sx={{ m: 1 }}>
+            <Button variant="contained" color="secondary" onClick={() => handleNewTesserino(5)()} sx={{ m: 1 }}>
               Tesserino 5 moduli
             </Button>
           </DialogContent>
