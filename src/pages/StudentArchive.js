@@ -143,13 +143,14 @@ function StudentArchive() {
                                 if (!lesson.isUsed) {
                                   try {
                                     await axios.patch(`${apiUrl}/api/students/${student._id}/tesserini/${tessIdx}/lessons/${lessonIdx}/undo`, {}, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
-                                    const updatedStudents = [...students];
-                                    updatedStudents[idx].tesserini[tessIdx].lessons[lessonIdx].isUsed = true;
                                     const now = new Date();
                                     const dateStr = now.toLocaleString('it-IT', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
                                     setSnackbarMsg(`Lezione annullata il ${dateStr}`);
                                     setSnackbarOpen(true);
-                                    setStudents(updatedStudents);
+                                    // Aggiorna la lista studenti dal backend
+                                    axios.get(`${apiUrl}/api/students`, {
+                                      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+                                    }).then(res => setStudents(res.data));
                                   } catch (err) {
                                     let msg = 'Errore annullamento: ';
                                     if (err.response && err.response.data && err.response.data.message) {

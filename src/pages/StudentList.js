@@ -61,13 +61,13 @@ function StudentList() {
 
   const handleAddStudent = async (numLessons) => {
     try {
-      await axios.post(`${apiUrl}/api/students`, pendingStudent, {
+      // Crea lo studente
+      const res = await axios.post(`${apiUrl}/api/students`, pendingStudent, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      }).then(async res => {
-        // Dopo aver creato lo studente, aggiungi il tesserino scelto
-        await axios.post(`${apiUrl}/api/students/${res.data._id}/tesserini`, { numLessons }, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        });
+      });
+      // Aggiungi SOLO il tesserino scelto
+      await axios.post(`${apiUrl}/api/students/${res.data._id}/tesserini`, { numLessons }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setOpen(false);
       setOpenTessDialog(false);
