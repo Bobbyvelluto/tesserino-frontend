@@ -187,7 +187,7 @@ function StudentCard() {
     <Container maxWidth="md" sx={{
       p: 0, m: 0, minWidth: '100vw', minHeight: '100vh',
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-      bgcolor: '#fff8e1',
+      bgcolor: '#232323',
     }}>
       <Box sx={{ width: '100%', maxWidth: 400, aspectRatio: '3/4', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', mb: 0, pb: 0, position: 'relative' }}>
         <img
