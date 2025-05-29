@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Box, Tooltip } from '@mui/material';
-import { useRouter } from 'next/router';
+import { useParams } from 'react-router-dom';
 
 const StudentCard = () => {
-  const router = useRouter();
-  const { id } = router.query;
+  const { id } = useParams();
   const [student, setStudent] = useState(null);
   const [selectedTessIndex, setSelectedTessIndex] = useState(null);
 
