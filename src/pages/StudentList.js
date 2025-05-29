@@ -41,8 +41,12 @@ function StudentList() {
   const [selectedTessType, setSelectedTessType] = useState(null);
   const [linkQrOpen, setLinkQrOpen] = useState(false);
   const [linkQrStudent, setLinkQrStudent] = useState(null);
+<<<<<<< HEAD
   const [isSaving, setIsSaving] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+=======
+  const [tessBtnDisabled, setTessBtnDisabled] = useState(false);
+>>>>>>> 901ef063a8c648bb61189ee9d64e316c5c81604e
   const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -68,6 +72,30 @@ sh: react-scripts: command not found
 wilsonbasetta@Mac tesserino-frontend % 
 
 
+<<<<<<< HEAD
+=======
+  const handleAddStudent = async (numLessons) => {
+    setTessBtnDisabled(true);
+    try {
+      // Crea lo studente
+      const res = await axios.post(`${apiUrl}/api/students`, pendingStudent, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      // Aggiungi SOLO il tesserino scelto
+      await axios.post(`${apiUrl}/api/students/${res.data._id}/tesserini`, { numLessons }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      setOpen(false);
+      setOpenTessDialog(false);
+      setNewStudent({ name: '', telefono: '' });
+      setPendingStudent(null);
+      fetchStudents();
+    } catch (error) {
+      console.error('Errore nell\'aggiunta dello studente:', error);
+    } finally {
+      setTessBtnDisabled(false);
+    }
+>>>>>>> 901ef063a8c648bb61189ee9d64e316c5c81604e
   };
 
   const handleDeleteStudent = async (id) => {
@@ -406,6 +434,24 @@ wilsonbasetta@Mac tesserino-frontend %
         </DialogActions>
       </Dialog>
 
+<<<<<<< HEAD
+=======
+      <Dialog open={openTessDialog} onClose={() => setOpenTessDialog(false)}>
+        <DialogTitle>Scegli il tipo di tesserino</DialogTitle>
+        <DialogContent>
+          <Button variant="contained" color="primary" onClick={() => handleAddStudent(10)} sx={{ m: 1 }} disabled={tessBtnDisabled}>
+            Tesserino 10 moduli
+          </Button>
+          <Button variant="contained" color="secondary" onClick={() => handleAddStudent(5)} sx={{ m: 1 }} disabled={tessBtnDisabled}>
+            Tesserino 5 moduli
+          </Button>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenTessDialog(false)}>Annulla</Button>
+        </DialogActions>
+      </Dialog>
+
+>>>>>>> 901ef063a8c648bb61189ee9d64e316c5c81604e
       <Dialog open={qrOpen} onClose={handleCloseQR}>
         <DialogTitle>QR Code Tesserino</DialogTitle>
         <DialogContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>

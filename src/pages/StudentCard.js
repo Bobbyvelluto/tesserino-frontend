@@ -5,27 +5,37 @@ import { useRouter } from 'next/router';
 
 const StudentCard = () => {
   const router = useRouter();
-  const { id, selectedTessIndex } = router.query;
+  const { id } = router.query;
   const [student, setStudent] = useState(null);
-  const [lessons, setLessons] = useState([]);
+  const [selectedTessIndex, setSelectedTessIndex] = useState(null);
 
   useEffect(() => {
     fetchStudent();
+    // Aggiorna i dati ogni 10 secondi
+    const interval = setInterval(fetchStudent, 10000);
+    return () => clearInterval(interval);
   }, [id]);
+
+  useEffect(() => {
+    if (student && student.tesserini && student.tesserini.length > 0) {
+      setSelectedTessIndex(student.tesserini.length - 1);
+    }
+  }, [student]);
 
   const fetchStudent = async () => {
     try {
       const response = await axios.get(`${apiUrl}/api/students/${id}`);
       setStudent(response.data);
-      setLessons(response.data.lessons);
     } catch (error) {
       console.error('Errore nel recupero dello studente:', error);
     }
   };
 
-  const getSelectedLessons = () => {
-    return lessons.filter((lesson) => lesson.tessIndex === selectedTessIndex);
-  };
+  // Funzione helper per ottenere le lezioni dal tesserino selezionato
+  const getSelectedLessons = () =>
+    student && student.tesserini && Array.isArray(student.tesserini) && student.tesserini.length > 0 && selectedTessIndex !== null && Array.isArray(student.tesserini[selectedTessIndex].lessons)
+      ? student.tesserini[selectedTessIndex].lessons
+      : [];
 
   return (
     <div>
