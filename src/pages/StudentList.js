@@ -41,6 +41,7 @@ function StudentList() {
   const [pendingStudent, setPendingStudent] = useState(null);
   const [linkQrOpen, setLinkQrOpen] = useState(false);
   const [linkQrStudent, setLinkQrStudent] = useState(null);
+  const [tessBtnDisabled, setTessBtnDisabled] = useState(false);
   const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -60,6 +61,7 @@ function StudentList() {
   };
 
   const handleAddStudent = async (numLessons) => {
+    setTessBtnDisabled(true);
     try {
       // Crea lo studente
       const res = await axios.post(`${apiUrl}/api/students`, pendingStudent, {
@@ -76,6 +78,8 @@ function StudentList() {
       fetchStudents();
     } catch (error) {
       console.error('Errore nell\'aggiunta dello studente:', error);
+    } finally {
+      setTessBtnDisabled(false);
     }
   };
 
@@ -378,10 +382,10 @@ function StudentList() {
       <Dialog open={openTessDialog} onClose={() => setOpenTessDialog(false)}>
         <DialogTitle>Scegli il tipo di tesserino</DialogTitle>
         <DialogContent>
-          <Button variant="contained" color="primary" onClick={() => handleAddStudent(10)} sx={{ m: 1 }}>
+          <Button variant="contained" color="primary" onClick={() => handleAddStudent(10)} sx={{ m: 1 }} disabled={tessBtnDisabled}>
             Tesserino 10 moduli
           </Button>
-          <Button variant="contained" color="secondary" onClick={() => handleAddStudent(5)} sx={{ m: 1 }}>
+          <Button variant="contained" color="secondary" onClick={() => handleAddStudent(5)} sx={{ m: 1 }} disabled={tessBtnDisabled}>
             Tesserino 5 moduli
           </Button>
         </DialogContent>

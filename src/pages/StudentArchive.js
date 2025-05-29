@@ -151,6 +151,8 @@ function StudentArchive() {
                                     axios.get(`${apiUrl}/api/students`, {
                                       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
                                     }).then(res => setStudents(res.data));
+                                    // Notifica anche la pagina tesserino studente (se aperta)
+                                    localStorage.setItem('tessUpdate', Date.now());
                                   } catch (err) {
                                     let msg = 'Errore annullamento: ';
                                     if (err.response && err.response.data && err.response.data.message) {

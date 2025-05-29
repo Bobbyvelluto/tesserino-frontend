@@ -46,6 +46,14 @@ function StudentCard() {
     }
   }, [student]);
 
+  useEffect(() => {
+    const onStorage = (e) => {
+      if (e.key === 'tessUpdate') fetchStudent();
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
+
   const fetchStudent = async () => {
     try {
       const response = await axios.get(`${apiUrl}/api/students/${id}`, {
