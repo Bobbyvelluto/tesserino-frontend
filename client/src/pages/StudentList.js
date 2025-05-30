@@ -18,7 +18,7 @@ import {
   Snackbar,
   IconButton,
 } from '@mui/material';
-import { Add as AddIcon, ContentCopy as ContentCopyIcon, Link as LinkIcon } from '@mui/icons-material';
+import { ContentCopy as ContentCopyIcon, Link as LinkIcon } from '@mui/icons-material';
 import axios from 'axios';
 import SearchIcon from '@mui/icons-material/Search';
 import { saveAs } from 'file-saver';
@@ -120,6 +120,11 @@ function StudentList() {
     const csv = [header, ...rows].map(r => r.map(x => `"${x}"`).join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     saveAs(blob, 'studenti_tesserini.csv');
+  };
+
+  const handleCloseQR = () => {
+    setQrOpen(false);
+    setQrValue('');
   };
 
   return (
