@@ -4,11 +4,6 @@ import {
   Container,
   Paper,
   Typography,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  IconButton,
   Button,
   Dialog,
   DialogTitle,
@@ -19,14 +14,15 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Box,
-  Alert,
   Grid,
+  Snackbar,
+  IconButton,
 } from '@mui/material';
-import { Add as AddIcon, Visibility as VisibilityIcon, ContentCopy as ContentCopyIcon, QrCode as QrCodeIcon, Delete as DeleteIcon, Edit as EditIcon, Link as LinkIcon } from '@mui/icons-material';
+import { Add as AddIcon, ContentCopy as ContentCopyIcon, Link as LinkIcon } from '@mui/icons-material';
 import axios from 'axios';
 import SearchIcon from '@mui/icons-material/Search';
 import { saveAs } from 'file-saver';
-import QRCode from 'qrcode.react';
+import { QRCode } from 'qrcode.react';
 
 function StudentList() {
   const [students, setStudents] = useState([]);
@@ -38,12 +34,11 @@ function StudentList() {
   const [editStudent, setEditStudent] = useState({ _id: '', name: '', telefono: '' });
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
-  const [openTessDialog, setOpenTessDialog] = useState(false);
-  const [pendingStudent, setPendingStudent] = useState(null);
+  const [selectedTessType, setSelectedTessType] = useState(null);
   const [linkQrOpen, setLinkQrOpen] = useState(false);
   const [linkQrStudent, setLinkQrStudent] = useState(null);
-  const [tessBtnDisabled, setTessBtnDisabled] = useState(false);
-  const [tessLink, setTessLink] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -62,31 +57,6 @@ function StudentList() {
     }
   };
 
-  const handleAddStudent = async (numLessons) => {
-    setTessBtnDisabled(true);
-    try {
-      // Crea lo studente
-      const res = await axios.post(`${apiUrl}/api/students`, pendingStudent, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
-      // Aggiungi SOLO il tesserino scelto
-      const tessRes = await axios.post(`${apiUrl}/api/students/${res.data._id}/tesserini`, { numLessons }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
-      setTessLink(`${window.location.origin}/tessera/${res.data._id}`);
-      setQrValue(`${window.location.origin}/tessera/${res.data._id}`);
-      setOpen(false);
-      setOpenTessDialog(false);
-      setNewStudent({ name: '', telefono: '' });
-      setPendingStudent(null);
-      fetchStudents();
-    } catch (error) {
-      console.error('Errore nell\'aggiunta dello studente:', error);
-    } finally {
-      setTessBtnDisabled(false);
-    }
-  };
-
   const handleDeleteStudent = async (id) => {
     if (window.confirm('Sei sicuro di voler eliminare questo studente?')) {
       try {
@@ -98,32 +68,6 @@ function StudentList() {
         alert('Errore nell\'eliminazione dello studente');
       }
     }
-  };
-
-  function getServerOrigin() {
-    // Restituisce sempre il dominio pubblico di Render
-    return 'https://tesserino-frontend.onrender.com';
-  }
-
-  const handleCopyLink = (id) => {
-    const url = `${getServerOrigin()}/student/${id}`;
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(url)
-        .then(() => alert('Link tesserino copiato!'))
-        .catch(() => alert('Copia non riuscita, copia manualmente il link: ' + url));
-    } else {
-      window.prompt('Copia manualmente il link:', url);
-    }
-  };
-
-  const handleShowQR = (id) => {
-    setQrValue(`${getServerOrigin()}/student/${id}`);
-    setQrOpen(true);
-  };
-
-  const handleCloseQR = () => {
-    setQrOpen(false);
-    setQrValue('');
   };
 
   const handleEditStudent = (student) => {
@@ -178,10 +122,6 @@ function StudentList() {
     saveAs(blob, 'studenti_tesserini.csv');
   };
 
-  const studentsInScadenza = students.filter(
-    s => getLessons(s).filter(l => !l.isUsed).length <= 2
-  );
-
   return (
     <Container maxWidth="md" sx={{ mt: 4 }}>
       <Paper elevation={3} sx={{
@@ -226,72 +166,88 @@ function StudentList() {
               <Typography variant="body1" sx={{ color: '#588157', mb: 2 }}>
                 Visualizza e gestisci gli studenti e i loro tesserini
               </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 2 }}>
-          <TextField
-            placeholder="Cerca per nome o telefono"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-            sx={{ width: 260 }}
-          />
-          <ToggleButtonGroup
-            value={filter}
-            exclusive
-            onChange={(e, v) => v && setFilter(v)}
-            size="small"
-          >
-            <ToggleButton value="all">Tutti</ToggleButton>
-            <ToggleButton value="active">Con lezioni residue</ToggleButton>
-            <ToggleButton value="finished">Tesserino esaurito</ToggleButton>
-          </ToggleButtonGroup>
-        </Box>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => setOpen(true)}
-                sx={{ mb: 2, bgcolor: '#588157', color: '#fff', fontWeight: 700, ':hover': { bgcolor: '#3e6b3e' } }}
-        >
-          Aggiungi Studente
-        </Button>
-        <Button
-          variant="outlined"
+              <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                <Button
+                  variant={selectedTessType === 10 ? 'contained' : 'outlined'}
+                  color="primary"
+                  onClick={() => setSelectedTessType(10)}
+                >
+                  Tesserino 10 lezioni
+                </Button>
+                <Button
+                  variant={selectedTessType === 5 ? 'contained' : 'outlined'}
+                  color="primary"
+                  onClick={() => setSelectedTessType(5)}
+                >
+                  Tesserino 5 lezioni
+                </Button>
+              </Box>
+              {selectedTessType && (
+                <Button
+                  variant="contained"
+                  onClick={() => setOpen(true)}
+                  sx={{ mb: 2, bgcolor: '#588157', color: '#fff', fontWeight: 700, ':hover': { bgcolor: '#3e6b3e' } }}
+                >
+                  Aggiungi Studente
+                </Button>
+              )}
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 2 }}>
+                <TextField
+                  placeholder="Cerca per nome o telefono"
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{ width: 260 }}
+                />
+                <ToggleButtonGroup
+                  value={filter}
+                  exclusive
+                  onChange={(e, v) => v && setFilter(v)}
+                  size="small"
+                >
+                  <ToggleButton value="all">Tutti</ToggleButton>
+                  <ToggleButton value="active">Con lezioni residue</ToggleButton>
+                  <ToggleButton value="finished">Tesserino esaurito</ToggleButton>
+                </ToggleButtonGroup>
+              </Box>
+              <Button
+                variant="outlined"
                 sx={{ ml: 2, mb: 2, borderColor: '#a3b18a', color: '#588157', fontWeight: 600, ':hover': { borderColor: '#588157', background: '#e9f5db' } }}
-          onClick={exportCSV}
-        >
-          Esporta CSV
-        </Button>
+                onClick={exportCSV}
+              >
+                Esporta CSV
+              </Button>
             </Paper>
           </Grid>
           <Grid item xs={12}>
-        <Box sx={{ flex: 1, overflowY: 'auto', pr: 1 }}>
-          {filteredStudents.map((student) => (
-            <Paper
-              key={student._id}
-              elevation={2}
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                mb: 2,
-                p: 2,
-                borderRadius: 4,
+            <Box sx={{ flex: 1, overflowY: 'auto', pr: 1 }}>
+              {filteredStudents.map((student) => (
+                <Paper
+                  key={student._id}
+                  elevation={2}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    mb: 2,
+                    p: 2,
+                    borderRadius: 4,
                     boxShadow: '0 2px 8px #a3e4b744',
                     background: 'linear-gradient(135deg, #d0f5df 0%, #a3e4b7 100%)',
                     border: '2px solid #a3e4b7',
-                transition: 'box-shadow 0.2s',
+                    transition: 'box-shadow 0.2s',
                     '&:hover': { boxShadow: '0 4px 16px #a3e4b788' },
-              }}
-            >
-              <Box sx={{ width: 48, height: 48, borderRadius: '50%', overflow: 'hidden', bgcolor: '#eee', mr: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
-                {/* Qui puoi mettere una foto profilo se disponibile, altrimenti icona */}
-                <span role="img" aria-label="user">👤</span>
-              </Box>
-              <Box sx={{ flex: 1 }}>
+                  }}
+                >
+                  <Box sx={{ width: 48, height: 48, borderRadius: '50%', overflow: 'hidden', bgcolor: '#eee', mr: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
+                    <span role="img" aria-label="user">👤</span>
+                  </Box>
+                  <Box sx={{ flex: 1 }}>
                     <Typography
                       sx={{
                         fontFamily: "'Front Page Neue', Arial, sans-serif !important",
@@ -303,59 +259,57 @@ function StudentList() {
                         mb: 0.5,
                       }}
                     >
-                  {student.name}
-                </Typography>
-                <Typography sx={{ fontSize: 15, color: '#888' }}>{student.telefono}</Typography>
-              </Box>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1, alignItems: 'center' }}>
-                <Button
-                  variant="outlined"
-                  color="success"
-                  size="small"
-                  sx={{ mr: 1, mb: { xs: 1, md: 0 } }}
-                  onClick={() => navigate(`/student/${student._id}`)}
-                >
-                  Vedi
-                </Button>
-                {/* Pulsante Link & QR */}
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  size="small"
-                  startIcon={<LinkIcon />}
-                  sx={{ mr: 1 }}
-                  onClick={() => { setLinkQrStudent(student); setLinkQrOpen(true); }}
-                >
-                  Link & QR
-                </Button>
-                {/* Modifica */}
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  size="small"
-                  sx={{ mr: 1 }}
-                  onClick={() => handleEditStudent(student)}
-                >
-                  Modifica
-                </Button>
-                {/* Cancella */}
-                <Button
-                  variant="outlined"
-                  color="error"
-                  size="small"
-                  onClick={() => handleDeleteStudent(student._id)}
-                >
-                  Cancella
-                </Button>
-              </Box>
-            </Paper>
-          ))}
-        </Box>
+                      {student.name}
+                    </Typography>
+                    <Typography sx={{ fontSize: 15, color: '#888' }}>{student.telefono}</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1, alignItems: 'center' }}>
+                    <Button
+                      variant="outlined"
+                      color="success"
+                      size="small"
+                      sx={{ mr: 1, mb: { xs: 1, md: 0 } }}
+                      onClick={() => navigate(`/student/${student._id}`)}
+                    >
+                      Vedi
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      size="small"
+                      startIcon={<LinkIcon />}
+                      sx={{ mr: 1 }}
+                      onClick={() => { setLinkQrStudent(student); setLinkQrOpen(true); }}
+                    >
+                      Link & QR
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      size="small"
+                      sx={{ mr: 1 }}
+                      onClick={() => handleEditStudent(student)}
+                    >
+                      Modifica
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      size="small"
+                      onClick={() => handleDeleteStudent(student._id)}
+                    >
+                      Cancella
+                    </Button>
+                  </Box>
+                </Paper>
+              ))}
+            </Box>
           </Grid>
         </Grid>
       </Paper>
 
-      <Dialog open={open} onClose={() => setOpen(false)}>
+      {/* Dialogs */}
+      <Dialog open={open} onClose={() => { setOpen(false); setNewStudent({ name: '', telefono: '' }); }}>
         <DialogTitle>Aggiungi Nuovo Studente</DialogTitle>
         <DialogContent>
           <TextField
@@ -376,25 +330,32 @@ function StudentList() {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpen(false)}>Annulla</Button>
-          <Button onClick={() => { setPendingStudent(newStudent); setOpen(false); setOpenTessDialog(true); }} variant="contained">
-            Avanti
+          <Button onClick={() => { setOpen(false); setNewStudent({ name: '', telefono: '' }); }}>Annulla</Button>
+          <Button
+            onClick={async () => {
+              if (isSaving) return;
+              setIsSaving(true);
+              try {
+                const res = await axios.post(`${apiUrl}/api/students`, newStudent, {
+                  headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+                });
+                await axios.post(`${apiUrl}/api/students/${res.data._id}/tesserini`, { numLessons: selectedTessType }, {
+                  headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+                });
+                setOpen(false);
+                setNewStudent({ name: '', telefono: '' });
+                fetchStudents();
+              } catch (error) {
+                console.error("Errore nell'aggiunta dello studente:", error);
+              } finally {
+                setIsSaving(false);
+              }
+            }}
+            variant="contained"
+            disabled={isSaving}
+          >
+            {isSaving ? 'Salvataggio...' : 'Salva'}
           </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog open={openTessDialog} onClose={() => setOpenTessDialog(false)}>
-        <DialogTitle>Scegli il tipo di tesserino</DialogTitle>
-        <DialogContent>
-          <Button variant="contained" color="primary" onClick={() => handleAddStudent(10)} sx={{ m: 1 }} disabled={tessBtnDisabled}>
-            Tesserino 10 moduli
-          </Button>
-          <Button variant="contained" color="secondary" onClick={() => handleAddStudent(5)} sx={{ m: 1 }} disabled={tessBtnDisabled}>
-            Tesserino 5 moduli
-          </Button>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenTessDialog(false)}>Annulla</Button>
         </DialogActions>
       </Dialog>
 
@@ -433,29 +394,56 @@ function StudentList() {
         </DialogActions>
       </Dialog>
 
-      {/* Dialog Link & QR */}
       <Dialog open={linkQrOpen} onClose={() => setLinkQrOpen(false)}>
         <DialogTitle>Link e QR Tesserino</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
           {linkQrStudent && (
             <>
-              <Typography sx={{ fontSize: 15, mb: 1, wordBreak: 'break-all' }}>
-                {`${window.location.origin}/student/${linkQrStudent._id}`}
-              </Typography>
-              <Button
+              <TextField
+                value={`${window.location.origin}/student/${linkQrStudent._id}`}
+                InputProps={{
+                  readOnly: true,
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => {
+                          navigator.clipboard.writeText(`${window.location.origin}/student/${linkQrStudent._id}`);
+                          setSnackbarOpen(true);
+                        }}
+                        edge="end"
+                        size="small"
+                      >
+                        <ContentCopyIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{ width: 320, mb: 1 }}
                 variant="outlined"
                 size="small"
-                startIcon={<ContentCopyIcon />}
-                onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/student/${linkQrStudent._id}`); }}
-                sx={{ mb: 2 }}
-              >
-                Copia Link
-              </Button>
+              />
               <img
+                id="qr-img"
                 src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(window.location.origin + '/student/' + linkQrStudent._id)}`}
                 alt="QR Code"
                 style={{ margin: '0 auto', display: 'block', borderRadius: 8 }}
               />
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={() => {
+                  const img = document.getElementById('qr-img');
+                  const link = document.createElement('a');
+                  link.href = img.src;
+                  link.download = `qr_tesserino_${linkQrStudent._id}.png`;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                }}
+                sx={{ mt: 1 }}
+              >
+                Scarica QR
+              </Button>
             </>
           )}
         </DialogContent>
@@ -463,19 +451,15 @@ function StudentList() {
           <Button onClick={() => setLinkQrOpen(false)}>Chiudi</Button>
         </DialogActions>
       </Dialog>
-
-      {/* Mostra link e QR code dopo creazione tesserino */}
-      {tessLink && (
-        <Box sx={{ mt: 2, textAlign: 'center' }}>
-          <Typography variant="subtitle1">Link tesserino:</Typography>
-          <a href={tessLink} target="_blank" rel="noopener noreferrer">{tessLink}</a>
-          <Box sx={{ mt: 1 }}>
-            <QRCode value={qrValue} size={128} />
-          </Box>
-        </Box>
-      )}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={2000}
+        onClose={() => setSnackbarOpen(false)}
+        message="Link copiato negli appunti!"
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      />
     </Container>
   );
 }
 
-export default StudentList; 
+export default StudentList;
